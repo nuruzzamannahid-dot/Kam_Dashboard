@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KAM Team — Issue Tracker Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a18;font-size:14px;line-height:1.5}
+.topbar{background:#fff;border-bottom:1px solid #e5e5e2;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+.topbar h1{font-size:16px;font-weight:500}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#ccc;display:inline-block;margin-right:4px;transition:background .3s}
+.live-dot.green{background:#639922}
+.live-dot.yellow{background:#EF9F27}
+.last-upd{font-size:11px;color:#888}
+.btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#444;transition:background .2s}
+.btn:hover{background:#f0f0ec}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.metric{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e5}
+.metric-label{font-size:11px;color:#888;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.metric-val{font-size:24px;font-weight:500}
+.members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
+.member-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e8e8e5;border-left:4px solid #ccc}
+.member-card.asif{border-left-color:#378ADD}
+.member-card.nahid{border-left-color:#1D9E75}
+.member-card.vacant{opacity:.45;border-left-color:#ccc;border-style:dashed}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.av-asif{background:#E6F1FB;color:#0C447C}
+.av-nahid{background:#E1F5EE;color:#085041}
+.av-vacant{background:#f0f0ec;color:#888}
+.member-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.member-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-role{font-size:11px;color:#888}
+.ratio-badge{font-size:11px;padding:3px 9px;border-radius:4px;margin-left:auto;flex-shrink:0}
+.good{background:#EAF3DE;color:#27500A}
+.mid{background:#FAEEDA;color:#633806}
+.bad{background:#FCEBEB;color:#791F1F}
+.mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.mini-stat{text-align:center;padding:8px 4px;border-radius:8px;background:#f8f8f6}
+.mini-stat.s-solved{background:#EAF3DE}
+.mini-stat.s-pending{background:#FAEEDA}
+.mini-stat.s-ir{background:#E6F1FB}
+.mini-stat-val{font-size:17px;font-weight:500}
+.mini-stat-lbl{font-size:10px;color:#888}
+.sv-asif{color:#378ADD}
+.sv-nahid{color:#1D9E75}
+.sv-solved{color:#27500A}
+.sv-pending{color:#633806}
+.sv-ir{color:#0C447C}
+.ratio-bar-bg{background:#e8e8e5;border-radius:3px;height:6px;margin-top:4px}
+.ratio-bar{height:6px;border-radius:3px;transition:width .5s}
+.bar-good{background:#3B6D11}
+.bar-mid{background:#BA7517}
+.bar-bad{background:#A32D2D}
+.top-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.cat-pill{font-size:10px;padding:2px 8px;border-radius:4px;background:#f0f0ec;color:#555}
+.urgent-alert{font-size:11px;color:#854F0B;background:#FAEEDA;padding:5px 10px;border-radius:5px;margin-top:10px}
+.chart-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e8e8e5;margin-bottom:20px}
+.card-title{font-size:14px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:#1a1a18}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#666}
+.legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.filters input,.filters select{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#333}
+.filters input{flex:1;min-width:180px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer}
+.tab.on{background:#f0f0ec;color:#1a1a18;font-weight:500}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;border-bottom:1px solid #eee;color:#888;font-weight:500;font-size:11px;white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid #f0f0ec;vertical-align:top;word-break:break-word}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#fafaf8}
+.pill{font-size:10px;padding:2px 8px;border-radius:4px;display:inline-block}
+.pill-s{background:#EAF3DE;color:#27500A}
+.pill-p{background:#FAEEDA;color:#633806}
+.pill-o{background:#f0f0ec;color:#555}
+.pill-ir{background:#E6F1FB;color:#0C447C}
+.pill-urg{background:#FAEEDA;color:#633806}
+.tbl-count{font-size:11px;color:#888;text-align:right;margin-top:8px}
+.err-banner{background:#FAEEDA;border-radius:8px;padding:10px 14px;font-size:12px;color:#633806;margin-bottom:14px}
+.spinner{text-align:center;padding:40px;color:#888;font-size:13px}
+@media(max-width:600px){.members-grid{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>KAM team — issue tracker</h1>
+    <div class="last-upd" id="lastUpd">Connecting…</div>
+  </div>
+  <div class="topbar-right">
+    <span id="liveLabel" style="font-size:11px;color:#888">
+      <span class="live-dot" id="liveDot"></span><span id="liveText">loading</span>
+    </span>
+    <button class="btn" onclick="loadData()">&#8635; Refresh</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="errBanner" style="display:none" class="err-banner"></div>
+  <div id="spinner" class="spinner">Loading live data from Google Sheet…</div>
+
+  <div id="app" style="display:none">
+    <div class="metrics-row" id="topMetrics"></div>
+    <div class="members-grid" id="memberCards"></div>
+
+    <div class="chart-card">
+      <div class="card-title">&#9646; Issues by category — all members</div>
+      <div class="legend" id="catLegend"></div>
+      <div style="position:relative;width:100%;height:240px">
+        <canvas id="catChart" role="img" aria-label="Bar chart of issues by category"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="card-title">&#9646; Issues log</div>
+      <div class="filters">
+        <input type="text" id="searchQ" placeholder="Search consignment, comment, category…">
+        <select id="dateF"><option value="">All dates</option></select>
+        <select id="catF"><option value="">All categories</option></select>
+      </div>
+      <div class="tabs" id="tabRow">
+        <button class="tab on" data-t="all">All</button>
+        <button class="tab" data-t="asif">Ahmed Asif Rashid</button>
+        <button class="tab" data-t="nahid">Nuruzzaman Nahid</button>
+        <button class="tab" data-t="ir">IR mails only</button>
+      </div>
+      <div class="tbl-wrap" id="tblWrap"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS=['#378ADD','#1D9E75','#D85A30','#7F77DD','#BA7517','#D4537E','#888780','#E24B4A'];
+const MEMBER_COLORS={asif:'#378ADD',nahid:'#1D9E75'};
+const MEMBER_AVCLASS={asif:'av-asif',nahid:'av-nahid',vacant:'av-vacant'};
+let ALL_ROWS=[], CAT_CHART=null, CUR_TAB='all';
+
+function loadData(){
+  setLive('yellow','refreshing…');
+  fetch('/api/data')
+    .then(r=>r.json())
+    .then(d=>{
+      document.getElementById('spinner').style.display='none';
+      document.getElementById('app').style.display='block';
+      if(!d.ok){
+        showErr('Could not reach Google Sheet — showing cached data. Make sure the sheet is publicly accessible.');
+      } else {
+        document.getElementById('errBanner').style.display='none';
+      }
+      ALL_ROWS=d.rows;
+      renderTopMetrics(d.summary);
+      renderMemberCards(d.members);
+      renderCatChart(d.cat_chart);
+      populateFilters(d.dates,d.cats);
+      renderTable();
+      setLive('green','live');
+      document.getElementById('lastUpd').textContent='Last updated: '+new Date().toLocaleTimeString()+' — auto-refreshes every 90s';
+    })
+    .catch(e=>{
+      setLive('yellow','error');
+      showErr('Failed to load data: '+e.message);
+      document.getElementById('spinner').style.display='none';
+    });
+}
+
+function setLive(color,text){
+  const dot=document.getElementById('liveDot');
+  dot.className='live-dot '+(color==='green'?'green':'yellow');
+  document.getElementById('liveText').textContent=text;
+}
+function showErr(msg){
+  const b=document.getElementById('errBanner');
+  b.style.display='block';b.textContent='⚠ '+msg;
+}
+
+function renderTopMetrics(s){
+  const ratioCol=s.ratio>=80?'#3B6D11':s.ratio>=50?'#854F0B':'#A32D2D';
+  document.getElementById('topMetrics').innerHTML=`
+    <div class="metric"><div class="metric-label">Total issues (team)</div><div class="metric-val">${s.total}</div></div>
+    <div class="metric"><div class="metric-label">Solved</div><div class="metric-val" style="color:#3B6D11">${s.solved}</div></div>
+    <div class="metric"><div class="metric-label">Solve ratio</div><div class="metric-val" style="color:${ratioCol}">${s.ratio}%</div></div>
+    <div class="metric"><div class="metric-label">IR mails raised</div><div class="metric-val" style="color:#185FA5">${s.ir}</div></div>
+    <div class="metric"><div class="metric-label">Urgent issues</div><div class="metric-val" style="color:#854F0B">${s.urgent}</div></div>
+  `;
+}
+
+function renderMemberCards(members){
+  let html='';
+  members.forEach(m=>{
+    if(m.vacant){
+      html+=`<div class="member-card vacant">
+        <div class="member-header">
+          <div class="avatar av-vacant">?</div>
+          <div><div class="member-name" style="color:#999">Seat vacant</div><div class="member-role">Hire pending</div></div>
+        </div>
+      </div>`;
+      return;
+    }
+    const ratioClass=m.ratio>=80?'good':m.ratio>=50?'mid':'bad';
+    const barClass=m.ratio>=80?'bar-good':m.ratio>=50?'bar-mid':'bar-bad';
+    const avClass=MEMBER_AVCLASS[m.key]||'av-vacant';
+    const topCats=(m.top_cats||[]).map(([c,n])=>`<span class="cat-pill">${c} (${n})</span>`).join('');
+    const urgAlert=m.urgent>0?`<div class="urgent-alert">⚠ ${m.urgent} urgent issue${m.urgent>1?'s':''} need attention</div>`:'';
+    html+=`<div class="member-card ${m.key}">
+      <div class="member-header">
+        <div class="avatar ${avClass}">${m.initials}</div>
+        <div style="flex:1;min-width:0"><div class="member-name">${m.name}</div><div class="member-role">KAM</div></div>
+        <span class="ratio-badge ${ratioClass}">${m.ratio}% solved</span>
+      </div>
+      <div class="mini-stats">
+        <div class="mini-stat"><div class="mini-stat-val sv-${m.key}">${m.total}</div><div class="mini-stat-lbl">total</div></div>
+        <div class="mini-stat s-solved"><div class="mini-stat-val sv-solved">${m.solved}</div><div class="mini-stat-lbl">solved</div></div>
+        <div class="mini-stat s-pending"><div class="mini-stat-val sv-pending">${m.pending}</div><div class="mini-stat-lbl">pending</div></div>
+        <div class="mini-stat s-ir"><div class="mini-stat-val sv-ir">${m.ir_count}</div><div class="mini-stat-lbl">IR mails</div></div>
+      </div>
+      <div style="font-size:11px;color:#888">Solve ratio</div>
+      <div class="ratio-bar-bg"><div class="ratio-bar ${barClass}" style="width:${m.ratio}%"></div></div>
+      <div style="font-size:11px;color:#888;margin-top:10px">Top categories</div>
+      <div class="top-cats">${topCats||'<span style="font-size:11px;color:#aaa">No data</span>'}</div>
+      ${urgAlert}
+    </div>`;
+  });
+  document.getElementById('memberCards').innerHTML=html;
+}
+
+function renderCatChart(catData){
+  const labels=catData.map(([c])=>c);
+  const data=catData.map(([,n])=>n);
+  document.getElementById('catLegend').innerHTML=labels.map((l,i)=>
+    `<span class="legend-item"><span class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></span>${l}</span>`
+  ).join('');
+  if(CAT_CHART)CAT_CHART.destroy();
+  CAT_CHART=new Chart(document.getElementById('catChart'),{
+    type:'bar',
+    data:{labels,datasets:[{label:'Issues',data,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} issues`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#888',font:{size:10},autoSkip:false,maxRotation:30}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1}}
+      }
+    }
+  });
+}
+
+function populateFilters(dates,cats){
+  const df=document.getElementById('dateF');
+  const cf=document.getElementById('catF');
+  df.innerHTML='<option value="">All dates</option>';
+  cf.innerHTML='<option value="">All categories</option>';
+  dates.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;df.appendChild(o);});
+  cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cf.appendChild(o);});
+}
+
+function renderTable(){
+  const q=document.getElementById('searchQ').value.toLowerCase();
+  const df=document.getElementById('dateF').value;
+  const cf=document.getElementById('catF').value;
+  const rows=ALL_ROWS.filter(r=>{
+    if(CUR_TAB==='asif'&&r.key!=='asif')return false;
+    if(CUR_TAB==='nahid'&&r.key!=='nahid')return false;
+    if(CUR_TAB==='ir'&&!r.is_ir)return false;
+    if(df&&!r.date.startsWith(df))return false;
+    if(cf&&r.cat!==cf)return false;
+    if(q){const hay=(r.cons+r.comment+r.cat+r.kam).toLowerCase();if(!hay.includes(q))return false;}
+    return true;
+  });
+  if(!rows.length){document.getElementById('tblWrap').innerHTML='<p style="color:#888;text-align:center;padding:20px">No issues match the filters.</p>';return;}
+  const INIT={asif:'AA',nahid:'NN'};
+  let h=`<table><thead><tr>
+    <th style="width:28px">#</th><th style="width:88px">Date</th><th style="width:52px">Who</th>
+    <th style="width:150px">Consignment / merchant</th><th style="width:130px">Category</th>
+    <th style="width:62px">Priority</th><th style="width:68px">Status</th><th>IR / comment</th>
+  </tr></thead><tbody>`;
+  rows.forEach((r,i)=>{
+    const col=MEMBER_COLORS[r.key]||'#888';
+    const init=INIT[r.key]||'?';
+    const stPill=r.solved?`<span class="pill pill-s">${r.status||'Solved'}</span>`:`<span class="pill pill-o">${r.status||'—'}</span>`;
+    const priPill=r.pri.toLowerCase()==='urgent'?`<span class="pill pill-urg">${r.pri}</span>`:r.pri?`<span class="pill pill-o">${r.pri}</span>`:'—';
+    const shortCom=r.comment.length>90?r.comment.substring(0,90)+'…':r.comment;
+    h+=`<tr>
+      <td style="color:#bbb">${i+1}</td>
+      <td>${r.date||'—'}</td>
+      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500">${init}</span></td>
+      <td>${r.cons||'—'}</td>
+      <td>${r.cat||'—'}<br><span style="color:#aaa;font-size:10px">${r.subcat||''}</span></td>
+      <td>${priPill}</td>
+      <td>${stPill}</td>
+      <td>${r.is_ir?'<span class="pill pill-ir">✉ IR mail</span><br>':''}<span style="color:#888">${shortCom||'—'}</span></td>
+    </tr>`;
+  });
+  h+=`</tbody></table><div class="tbl-count">${rows.length} issue${rows.length!==1?'s':''} shown</div>`;
+  document.getElementById('tblWrap').innerHTML=h;
+}
+
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+    this.classList.add('on');
+    CUR_TAB=this.dataset.t;
+    renderTable();
+  });
+});
+['searchQ','dateF','catF'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',renderTable);
+  document.getElementById(id).addEventListener('change',renderTable);
+});
+
+loadData();
+setInterval(loadData,90000);
+</script>
+</body>
+</html>
