@@ -20,7 +20,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .container{max-width:1200px;margin:0 auto;padding:20px}
 .metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
 .metric{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e5}
-.metric-label{font-size:11px;color:#888;margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.metric-label{font-size:11px;color:#888;margin-bottom:4px}
 .metric-val{font-size:24px;font-weight:500}
 .members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
 .member-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e8e8e5;border-left:4px solid #ccc}
@@ -59,7 +59,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .cat-pill{font-size:10px;padding:2px 8px;border-radius:4px;background:#f0f0ec;color:#555}
 .urgent-alert{font-size:11px;color:#854F0B;background:#FAEEDA;padding:5px 10px;border-radius:5px;margin-top:10px}
 .chart-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e8e8e5;margin-bottom:20px}
-.card-title{font-size:14px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:#1a1a18}
+.card-title{font-size:14px;font-weight:500;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:#1a1a18;flex-wrap:wrap}
+.card-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.toggle-group{display:flex;gap:4px;flex-wrap:wrap}
+.tgl{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;transition:all .15s}
+.tgl.on{background:#1a1a18;color:#fff;border-color:#1a1a18}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#666}
 .legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
@@ -84,6 +88,7 @@ tr:hover td{background:#fafaf8}
 .tbl-count{font-size:11px;color:#888;text-align:right;margin-top:8px}
 .err-banner{background:#FAEEDA;border-radius:8px;padding:10px 14px;font-size:12px;color:#633806;margin-bottom:14px}
 .spinner{text-align:center;padding:40px;color:#888;font-size:13px}
+.today-badge{background:#EAF3DE;color:#27500A;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:500}
 @media(max-width:600px){.members-grid{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -110,14 +115,55 @@ tr:hover td{background:#fafaf8}
     <div class="metrics-row" id="topMetrics"></div>
     <div class="members-grid" id="memberCards"></div>
 
+    <!-- Category chart -->
     <div class="chart-card">
       <div class="card-title">&#9646; Issues by category — all members</div>
       <div class="legend" id="catLegend"></div>
       <div style="position:relative;width:100%;height:240px">
-        <canvas id="catChart" role="img" aria-label="Bar chart of issues by category"></canvas>
+        <canvas id="catChart"></canvas>
       </div>
     </div>
 
+    <!-- Daily trend chart -->
+    <div class="chart-card">
+      <div class="card-title-row">
+        <div class="card-title" style="margin-bottom:0">&#9646; Daily issues — last
+          <span id="dayRangeLabel">30</span> days
+          <span class="today-badge" id="todayBadge">Today: 0</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="toggle-group">
+            <button class="tgl on" id="tgl7" onclick="setDayRange(7)">7 days</button>
+            <button class="tgl" id="tgl30" onclick="setDayRange(30)">30 days</button>
+          </div>
+          <div class="toggle-group">
+            <button class="tgl on" id="tglAll" onclick="setDayView('all')">All together</button>
+            <button class="tgl" id="tglPer" onclick="setDayView('per')">Per member</button>
+          </div>
+        </div>
+      </div>
+      <div class="legend" id="dailyLegend" style="margin-top:12px"></div>
+      <div style="position:relative;width:100%;height:260px">
+        <canvas id="dailyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Monthly trend chart -->
+    <div class="chart-card">
+      <div class="card-title-row">
+        <div class="card-title" style="margin-bottom:0">&#9646; Monthly issues</div>
+        <div class="toggle-group">
+          <button class="tgl on" id="tglMAll" onclick="setMonthView('all')">All together</button>
+          <button class="tgl" id="tglMPer" onclick="setMonthView('per')">Per member</button>
+        </div>
+      </div>
+      <div class="legend" id="monthlyLegend" style="margin-top:12px"></div>
+      <div style="position:relative;width:100%;height:260px">
+        <canvas id="monthlyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Issues log -->
     <div class="chart-card">
       <div class="card-title">&#9646; Issues log</div>
       <div class="filters">
@@ -140,7 +186,11 @@ tr:hover td{background:#fafaf8}
 const COLORS=['#378ADD','#1D9E75','#D85A30','#7F77DD','#BA7517','#D4537E','#888780','#E24B4A'];
 const MEMBER_COLORS={asif:'#378ADD',nahid:'#1D9E75'};
 const MEMBER_AVCLASS={asif:'av-asif',nahid:'av-nahid',vacant:'av-vacant'};
-let ALL_ROWS=[], CAT_CHART=null, CUR_TAB='all';
+const MEMBER_NAMES={asif:'Ahmed Asif Rashid',nahid:'Nuruzzaman Nahid'};
+
+let ALL_ROWS=[], CAT_CHART=null, DAILY_CHART=null, MONTHLY_CHART=null;
+let CUR_TAB='all', DAY_RANGE=7, DAY_VIEW='all', MONTH_VIEW='all';
+let DAILY_DATA=[], MONTHLY_DATA=[], ACTIVE_KEYS=[];
 
 function loadData(){
   setLive('yellow','refreshing…');
@@ -150,14 +200,22 @@ function loadData(){
       document.getElementById('spinner').style.display='none';
       document.getElementById('app').style.display='block';
       if(!d.ok){
-        showErr('Could not reach Google Sheet — showing cached data. Make sure the sheet is publicly accessible.');
+        showErr('Could not reach Google Sheet. Make sure the sheet is publicly accessible.');
       } else {
         document.getElementById('errBanner').style.display='none';
       }
       ALL_ROWS=d.rows;
+      DAILY_DATA=d.daily_trend||[];
+      MONTHLY_DATA=d.monthly_trend||[];
+      // detect active member keys from daily data
+      if(DAILY_DATA.length>0){
+        ACTIVE_KEYS=Object.keys(DAILY_DATA[0].per_member||{});
+      }
       renderTopMetrics(d.summary);
       renderMemberCards(d.members);
       renderCatChart(d.cat_chart);
+      renderDailyChart();
+      renderMonthlyChart();
       populateFilters(d.dates,d.cats);
       renderTable();
       setLive('green','live');
@@ -249,6 +307,131 @@ function renderCatChart(catData){
       }
     }
   });
+}
+
+// ---- Daily chart ----
+function setDayRange(n){
+  DAY_RANGE=n;
+  document.getElementById('tgl7').className='tgl'+(n===7?' on':'');
+  document.getElementById('tgl30').className='tgl'+(n===30?' on':'');
+  document.getElementById('dayRangeLabel').textContent=n;
+  renderDailyChart();
+}
+function setDayView(v){
+  DAY_VIEW=v;
+  document.getElementById('tglAll').className='tgl'+(v==='all'?' on':'');
+  document.getElementById('tglPer').className='tgl'+(v==='per'?' on':'');
+  renderDailyChart();
+}
+
+function renderDailyChart(){
+  if(!DAILY_DATA.length) return;
+  const slice=DAILY_DATA.slice(DAILY_DATA.length-DAY_RANGE);
+  const labels=slice.map(d=>fmtDate(d.date));
+
+  // today badge
+  const todayTotal=DAILY_DATA[DAILY_DATA.length-1]?.total||0;
+  document.getElementById('todayBadge').textContent='Today: '+todayTotal;
+
+  let datasets=[];
+  if(DAY_VIEW==='all'){
+    datasets=[{
+      label:'All members',
+      data:slice.map(d=>d.total),
+      borderColor:'#378ADD',
+      backgroundColor:'rgba(55,138,221,0.1)',
+      fill:true,tension:0.3,pointRadius:3,borderWidth:2
+    }];
+    document.getElementById('dailyLegend').innerHTML=
+      `<span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>All members</span>`;
+  } else {
+    datasets=ACTIVE_KEYS.map((key,i)=>({
+      label:MEMBER_NAMES[key]||key,
+      data:slice.map(d=>d.per_member[key]||0),
+      borderColor:MEMBER_COLORS[key]||COLORS[i],
+      backgroundColor:(MEMBER_COLORS[key]||COLORS[i])+'22',
+      fill:false,tension:0.3,pointRadius:3,borderWidth:2
+    }));
+    document.getElementById('dailyLegend').innerHTML=ACTIVE_KEYS.map((key,i)=>
+      `<span class="legend-item"><span class="legend-dot" style="background:${MEMBER_COLORS[key]||COLORS[i]}"></span>${MEMBER_NAMES[key]||key}</span>`
+    ).join('');
+  }
+
+  if(DAILY_CHART)DAILY_CHART.destroy();
+  DAILY_CHART=new Chart(document.getElementById('dailyChart'),{
+    type:'line',
+    data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y} issues`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#888',font:{size:10},maxRotation:40,autoSkip:true,maxTicksLimit:DAY_RANGE<=7?7:15}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1},beginAtZero:true}
+      }
+    }
+  });
+}
+
+// ---- Monthly chart ----
+function setMonthView(v){
+  MONTH_VIEW=v;
+  document.getElementById('tglMAll').className='tgl'+(v==='all'?' on':'');
+  document.getElementById('tglMPer').className='tgl'+(v==='per'?' on':'');
+  renderMonthlyChart();
+}
+
+function renderMonthlyChart(){
+  if(!MONTHLY_DATA.length) return;
+  const labels=MONTHLY_DATA.map(d=>fmtMonth(d.month));
+  let datasets=[];
+
+  if(MONTH_VIEW==='all'){
+    datasets=[{
+      label:'All members',
+      data:MONTHLY_DATA.map(d=>d.total),
+      backgroundColor:'#378ADD',borderWidth:0,borderRadius:4
+    }];
+    document.getElementById('monthlyLegend').innerHTML=
+      `<span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>All members</span>`;
+  } else {
+    datasets=ACTIVE_KEYS.map((key,i)=>({
+      label:MEMBER_NAMES[key]||key,
+      data:MONTHLY_DATA.map(d=>d[key]||0),
+      backgroundColor:MEMBER_COLORS[key]||COLORS[i],
+      borderWidth:0,borderRadius:4
+    }));
+    document.getElementById('monthlyLegend').innerHTML=ACTIVE_KEYS.map((key,i)=>
+      `<span class="legend-item"><span class="legend-dot" style="background:${MEMBER_COLORS[key]||COLORS[i]}"></span>${MEMBER_NAMES[key]||key}</span>`
+    ).join('');
+  }
+
+  if(MONTHLY_CHART)MONTHLY_CHART.destroy();
+  MONTHLY_CHART=new Chart(document.getElementById('monthlyChart'),{
+    type:'bar',
+    data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y} issues`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#888',font:{size:11}}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1},beginAtZero:true}
+      }
+    }
+  });
+}
+
+function fmtDate(iso){
+  if(!iso) return '';
+  const [,m,d]=iso.split('-');
+  return `${d}/${m}`;
+}
+function fmtMonth(ym){
+  if(!ym) return '';
+  const [y,m]=ym.split('-');
+  const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${names[parseInt(m)-1]} ${y}`;
 }
 
 function populateFilters(dates,cats){
