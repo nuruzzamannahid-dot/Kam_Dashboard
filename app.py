@@ -150,6 +150,5 @@ def api_data():
         "cats":   sorted(set(r["cat"]  for r in rows if r["cat"])),
     })
 
-
-    port = int(__import__('os').environ.get("PORT", 5000))
+port = int(__import__('os').environ.get("PORT", 5000))
 app.run(debug=False, host="0.0.0.0", port=port)
