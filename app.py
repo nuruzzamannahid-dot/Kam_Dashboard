@@ -150,9 +150,6 @@ def api_data():
         "cats":   sorted(set(r["cat"]  for r in rows if r["cat"])),
     })
 
-    
-    if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    print(f"KAM Dashboard running on port {port}")
-    app.run(debug=False, host="0.0.0.0", port=port)
+
+    port = int(__import__('os').environ.get("PORT", 5000))
+app.run(debug=False, host="0.0.0.0", port=port)
