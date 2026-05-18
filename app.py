@@ -13,8 +13,8 @@ FEEDBACK_SHEET_ID  = "1qWXu2WRA_D6qRwAK7mbGVJ-xHH2MHwqDHZiP5sO3Ofo"
 FEEDBACK_SHEET_URL = f"https://docs.google.com/spreadsheets/d/{FEEDBACK_SHEET_ID}/export?format=csv&gid=0"
 
 TEAM = [
-    {"key": "asif",  "name": "Ahmed Asif Rashid",  "initials": "AA"},
-    {"key": "nahid", "name": "Nuruzzaman Nahid",    "initials": "NN"},
+    {"key": "asif",  "name": "Ahmed Asif Rashid",  "initials": "AR"},
+    {"key": "nahid", "name": "Nuruzzaman Nahid",    "initials": "ND"},
     {"key": "m3",    "name": "Vacant",              "initials": "?", "vacant": True},
     {"key": "m4",    "name": "Vacant",              "initials": "?", "vacant": True},
     {"key": "m5",    "name": "Vacant",              "initials": "?", "vacant": True},
