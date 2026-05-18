@@ -3,82 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>KAM Team — Issue Tracker Dashboard</title>
+<title>KAM Team Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a18;font-size:14px;line-height:1.5}
 .topbar{background:#fff;border-bottom:1px solid #e5e5e2;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
-.topbar h1{font-size:16px;font-weight:500}
+.topbar h1{font-size:16px;font-weight:600}
 .topbar-right{display:flex;align-items:center;gap:10px}
 .live-dot{width:8px;height:8px;border-radius:50%;background:#ccc;display:inline-block;margin-right:4px;transition:background .3s}
 .live-dot.green{background:#639922}.live-dot.yellow{background:#EF9F27}
 .last-upd{font-size:11px;color:#888}
-.btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#444;transition:background .2s}
+.btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#444}
 .btn:hover{background:#f0f0ec}
 .container{max-width:1200px;margin:0 auto;padding:20px}
-.section-title{font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.05em;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
-.section-title::after{content:'';flex:1;height:1px;background:#e5e5e2}
-.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+/* Section headers */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin:28px 0 14px;font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.06em}
+.sec-hdr::after{content:'';flex:1;height:1px;background:#e0e0dc}
+/* Metric cards */
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
 .metric{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e5}
+.metric.m-mail{border-left:4px solid #7F77DD}
+.metric.m-pend{border-left:4px solid #EF9F27}
+.metric.m-solv{border-left:4px solid #1D9E75}
+.metric.m-rat{border-left:4px solid #378ADD}
 .metric-label{font-size:11px;color:#888;margin-bottom:4px}
-.metric-val{font-size:24px;font-weight:500}
+.metric-val{font-size:26px;font-weight:600}
+/* Member cards */
 .members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
 .member-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e8e8e5;border-left:4px solid #ccc}
 .member-card.asif{border-left-color:#378ADD}.member-card.nahid{border-left-color:#1D9E75}
-.member-card.vacant{opacity:.45;border-left-color:#ccc;border-style:dashed}
-.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.member-card.vacant{opacity:.4;border-style:dashed}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
 .av-asif{background:#E6F1FB;color:#0C447C}.av-nahid{background:#E1F5EE;color:#085041}.av-vacant{background:#f0f0ec;color:#888}
 .member-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.member-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.member-name{font-size:14px;font-weight:500}
 .member-role{font-size:11px;color:#888}
-.ratio-badge{font-size:11px;padding:3px 9px;border-radius:4px;margin-left:auto;flex-shrink:0}
+.ratio-badge{font-size:11px;padding:3px 9px;border-radius:4px;margin-left:auto}
 .good{background:#EAF3DE;color:#27500A}.mid{background:#FAEEDA;color:#633806}.bad{background:#FCEBEB;color:#791F1F}
 .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
 .mini-stat{text-align:center;padding:8px 4px;border-radius:8px;background:#f8f8f6}
-.mini-stat.s-solved{background:#EAF3DE}.mini-stat.s-pending{background:#FAEEDA}.mini-stat.s-ir{background:#E6F1FB}
-.mini-stat-val{font-size:17px;font-weight:500}.mini-stat-lbl{font-size:10px;color:#888}
-.sv-asif{color:#378ADD}.sv-nahid{color:#1D9E75}.sv-solved{color:#27500A}.sv-pending{color:#633806}.sv-ir{color:#0C447C}
-.ratio-bar-bg{background:#e8e8e5;border-radius:3px;height:6px;margin-top:4px}
-.ratio-bar{height:6px;border-radius:3px;transition:width .5s}
-.bar-good{background:#3B6D11}.bar-mid{background:#BA7517}.bar-bad{background:#A32D2D}
+.mini-stat.s-s{background:#EAF3DE}.mini-stat.s-p{background:#FAEEDA}.mini-stat.s-i{background:#E6F1FB}
+.mini-stat-val{font-size:17px;font-weight:600}
+.mini-stat-lbl{font-size:10px;color:#888}
+.sv-asif{color:#378ADD}.sv-nahid{color:#1D9E75}.sv-s{color:#27500A}.sv-p{color:#633806}.sv-i{color:#0C447C}
+.rbar-bg{background:#e8e8e5;border-radius:3px;height:6px;margin-top:4px}
+.rbar{height:6px;border-radius:3px;transition:width .5s}
+.bg-good{background:#3B6D11}.bg-mid{background:#BA7517}.bg-bad{background:#A32D2D}
 .top-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
 .cat-pill{font-size:10px;padding:2px 8px;border-radius:4px;background:#f0f0ec;color:#555}
-.urgent-alert{font-size:11px;color:#854F0B;background:#FAEEDA;padding:5px 10px;border-radius:5px;margin-top:10px}
+.urg-alert{font-size:11px;color:#854F0B;background:#FAEEDA;padding:5px 10px;border-radius:5px;margin-top:10px}
+/* Chart cards */
 .chart-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e8e8e5;margin-bottom:20px}
-.card-title{font-size:14px;font-weight:500;margin-bottom:12px;color:#1a1a18}
-.card-title-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-.toggle-group{display:flex;gap:4px;flex-wrap:wrap}
-.tgl{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;transition:all .15s}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:500;color:#1a1a18}
+.toggle-group{display:flex;gap:4px}
+.tgl{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer}
 .tgl.on{background:#1a1a18;color:#fff;border-color:#1a1a18}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#666}
-.legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
-/* Feedback section */
-.fb-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.fb-metric{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e5}
-.fb-metric.fb-total{border-left:4px solid #7F77DD}
-.fb-metric.fb-pending{border-left:4px solid #EF9F27}
-.fb-metric.fb-solved{border-left:4px solid #1D9E75}
-.fb-metric.fb-ratio{border-left:4px solid #378ADD}
-.fb-metric-label{font-size:11px;color:#888;margin-bottom:4px}
-.fb-metric-val{font-size:26px;font-weight:500}
-.fb-per-member{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:16px}
-.fb-member-card{background:#f8f8f6;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e5}
-.fb-member-name{font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.fb-bars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.fb-bar-item{text-align:center;padding:8px 4px;border-radius:8px}
-.fb-bar-item.fbt{background:#EDE9FD;color:#4C3D9E}
-.fb-bar-item.fbp{background:#FAEEDA;color:#633806}
-.fb-bar-item.fbs{background:#EAF3DE;color:#27500A}
-.fb-bar-val{font-size:18px;font-weight:500}
-.fb-bar-lbl{font-size:10px;color:#888}
-.fb-ratio-bar-bg{background:#e8e8e5;border-radius:3px;height:5px;margin-top:8px}
-.fb-ratio-bar{height:5px;border-radius:3px;background:#1D9E75;transition:width .5s}
-/* Mail table */
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.legend-dot{width:9px;height:9px;border-radius:2px}
+/* Feedback per-member */
+.fb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:20px}
+.fb-card{background:#fff;border-radius:10px;padding:16px;border:1px solid #e8e8e5}
+.fb-card-name{font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.fb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fb-stat{text-align:center;padding:8px 4px;border-radius:8px}
+.fb-stat.fbt{background:#EDE9FD;color:#4C3D9E}
+.fb-stat.fbp{background:#FAEEDA;color:#7A4A00}
+.fb-stat.fbs{background:#EAF3DE;color:#1A5C00}
+.fb-stat-val{font-size:18px;font-weight:600}
+.fb-stat-lbl{font-size:10px;color:#888}
+/* Tables */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .filters input,.filters select{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#333}
-.filters input{flex:1;min-width:180px}
+.filters input{flex:1;min-width:160px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .tab{font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer}
 .tab.on{background:#f0f0ec;color:#1a1a18;font-weight:500}
@@ -91,24 +90,24 @@ tr:hover td{background:#fafaf8}
 .pill{font-size:10px;padding:2px 8px;border-radius:4px;display:inline-block}
 .pill-s{background:#EAF3DE;color:#27500A}.pill-p{background:#FAEEDA;color:#633806}
 .pill-o{background:#f0f0ec;color:#555}.pill-ir{background:#E6F1FB;color:#0C447C}
-.pill-urg{background:#FAEEDA;color:#633806}.pill-pend{background:#FAEEDA;color:#7A4A00}
-.pill-solv{background:#EAF3DE;color:#1A5C00}
+.pill-urg{background:#FAEEDA;color:#633806}
+.pill-pend{background:#FFF3CD;color:#7A4A00}.pill-solv{background:#EAF3DE;color:#1A5C00}
 .tbl-count{font-size:11px;color:#888;text-align:right;margin-top:8px}
 .err-banner{background:#FAEEDA;border-radius:8px;padding:10px 14px;font-size:12px;color:#633806;margin-bottom:14px}
 .spinner{text-align:center;padding:40px;color:#888;font-size:13px}
-.today-badge{background:#EAF3DE;color:#27500A;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:500}
-@media(max-width:600px){.members-grid{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}.fb-summary{grid-template-columns:repeat(2,1fr)}}
+.today-badge{background:#EAF3DE;color:#27500A;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:500;margin-left:8px}
+@media(max-width:600px){.members-grid,.fb-grid{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div>
-    <h1>KAM team — issue tracker</h1>
+    <h1>KAM Team Dashboard</h1>
     <div class="last-upd" id="lastUpd">Connecting…</div>
   </div>
   <div class="topbar-right">
-    <span id="liveLabel" style="font-size:11px;color:#888">
+    <span style="font-size:11px;color:#888">
       <span class="live-dot" id="liveDot"></span><span id="liveText">loading</span>
     </span>
     <button class="btn" onclick="loadData()">&#8635; Refresh</button>
@@ -117,71 +116,64 @@ tr:hover td{background:#fafaf8}
 
 <div class="container">
   <div id="errBanner" style="display:none" class="err-banner"></div>
-  <div id="spinner" class="spinner">Loading live data from Google Sheet…</div>
+  <div id="spinner" class="spinner">Loading live data…</div>
 
   <div id="app" style="display:none">
 
-    <!-- ── ISSUE TRACKER ── -->
-    <div class="section-title">📋 Issue Tracker</div>
+    <!-- ═══ ISSUE TRACKER ═══ -->
+    <div class="sec-hdr">📋 Issue Tracker</div>
     <div class="metrics-row" id="topMetrics"></div>
     <div class="members-grid" id="memberCards"></div>
 
     <div class="chart-card">
-      <div class="card-title">&#9646; Issues by category — all members</div>
+      <div class="card-hdr">
+        <div class="card-title">Issues by category</div>
+      </div>
       <div class="legend" id="catLegend"></div>
-      <div style="position:relative;width:100%;height:240px">
-        <canvas id="catChart"></canvas>
-      </div>
+      <div style="position:relative;height:240px"><canvas id="catChart"></canvas></div>
     </div>
 
     <div class="chart-card">
-      <div class="card-title-row">
-        <div class="card-title" style="margin-bottom:0">&#9646; Daily issues — last
-          <span id="dayRangeLabel">7</span> days
-          <span class="today-badge" id="todayBadge">Today: 0</span>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div class="card-hdr">
+        <div class="card-title">Daily issues — last <span id="dayLabel">7</span> days <span class="today-badge" id="todayBadge">Today: 0</span></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
           <div class="toggle-group">
-            <button class="tgl on" id="tgl7" onclick="setDayRange(7)">7 days</button>
-            <button class="tgl" id="tgl30" onclick="setDayRange(30)">30 days</button>
+            <button class="tgl on" id="tgl7" onclick="setDayRange(7)">7d</button>
+            <button class="tgl" id="tgl30" onclick="setDayRange(30)">30d</button>
           </div>
           <div class="toggle-group">
-            <button class="tgl on" id="tglAll" onclick="setDayView('all')">All together</button>
-            <button class="tgl" id="tglPer" onclick="setDayView('per')">Per member</button>
+            <button class="tgl on" id="tglDA" onclick="setDayView('all')">All</button>
+            <button class="tgl" id="tglDP" onclick="setDayView('per')">Per member</button>
           </div>
         </div>
       </div>
-      <div class="legend" id="dailyLegend" style="margin-top:12px"></div>
-      <div style="position:relative;width:100%;height:260px">
-        <canvas id="dailyChart"></canvas>
-      </div>
+      <div class="legend" id="dailyLegend"></div>
+      <div style="position:relative;height:240px"><canvas id="dailyChart"></canvas></div>
     </div>
 
     <div class="chart-card">
-      <div class="card-title-row">
-        <div class="card-title" style="margin-bottom:0">&#9646; Monthly issues</div>
+      <div class="card-hdr">
+        <div class="card-title">Monthly issues</div>
         <div class="toggle-group">
-          <button class="tgl on" id="tglMAll" onclick="setMonthView('all')">All together</button>
-          <button class="tgl" id="tglMPer" onclick="setMonthView('per')">Per member</button>
+          <button class="tgl on" id="tglMA" onclick="setMonthView('all')">All</button>
+          <button class="tgl" id="tglMP" onclick="setMonthView('per')">Per member</button>
         </div>
       </div>
-      <div class="legend" id="monthlyLegend" style="margin-top:12px"></div>
-      <div style="position:relative;width:100%;height:260px">
-        <canvas id="monthlyChart"></canvas>
-      </div>
+      <div class="legend" id="monthlyLegend"></div>
+      <div style="position:relative;height:240px"><canvas id="monthlyChart"></canvas></div>
     </div>
 
-    <!-- ── MAIL FEEDBACK TRACKER ── -->
-    <div class="section-title">✉️ Mail Feedback Tracker</div>
+    <!-- ═══ MAIL FEEDBACK TRACKER ═══ -->
+    <div class="sec-hdr">✉️ Mail Feedback Tracker</div>
 
-    <div class="fb-summary" id="fbSummary"></div>
-    <div class="fb-per-member" id="fbPerMember"></div>
+    <div class="metrics-row" id="fbMetrics"></div>
+    <div class="fb-grid" id="fbPerMember"></div>
 
     <div class="chart-card">
-      <div class="card-title">&#9646; Mail log</div>
+      <div class="card-hdr"><div class="card-title">Mail log</div></div>
       <div class="filters">
         <input type="text" id="fbSearch" placeholder="Search mail subject…">
-        <select id="fbFilter">
+        <select id="fbStatus">
           <option value="all">All mails</option>
           <option value="pending">Pending only</option>
           <option value="solved">Solved only</option>
@@ -192,11 +184,11 @@ tr:hover td{background:#fafaf8}
           <option value="nahid">Nuruzzaman Nahid</option>
         </select>
       </div>
-      <div class="tbl-wrap" id="fbTblWrap"></div>
+      <div class="tbl-wrap" id="fbTable"></div>
     </div>
 
-    <!-- ── ISSUES LOG ── -->
-    <div class="section-title">📁 Issues Log</div>
+    <!-- ═══ ISSUES LOG ═══ -->
+    <div class="sec-hdr">📁 Issues Log</div>
     <div class="chart-card">
       <div class="filters">
         <input type="text" id="searchQ" placeholder="Search consignment, comment, category…">
@@ -211,366 +203,281 @@ tr:hover td{background:#fafaf8}
       </div>
       <div class="tbl-wrap" id="tblWrap"></div>
     </div>
-  </div>
+
+  </div><!-- #app -->
 </div>
 
 <script>
-const COLORS=['#378ADD','#1D9E75','#D85A30','#7F77DD','#BA7517','#D4537E','#888780','#E24B4A'];
-const MEMBER_COLORS={asif:'#378ADD',nahid:'#1D9E75'};
-const MEMBER_AVCLASS={asif:'av-asif',nahid:'av-nahid',vacant:'av-vacant'};
-const MEMBER_NAMES={asif:'Ahmed Asif Rashid',nahid:'Nuruzzaman Nahid'};
+const MC={asif:'#378ADD',nahid:'#1D9E75'};
+const MN={asif:'Ahmed Asif Rashid',nahid:'Nuruzzaman Nahid'};
+const AVC={asif:'av-asif',nahid:'av-nahid',vacant:'av-vacant'};
+const CLR=['#378ADD','#1D9E75','#D85A30','#7F77DD','#BA7517','#D4537E','#888780','#E24B4A'];
 
-let ALL_ROWS=[], ALL_FB_ROWS=[], CAT_CHART=null, DAILY_CHART=null, MONTHLY_CHART=null;
-let CUR_TAB='all', DAY_RANGE=7, DAY_VIEW='all', MONTH_VIEW='all';
-let DAILY_DATA=[], MONTHLY_DATA=[], ACTIVE_KEYS=[];
+let ALL=[],FB=[],CAT_C=null,DAY_C=null,MON_C=null;
+let TAB='all',DR=7,DV='all',MV='all',DDATA=[],MDATA=[],AKEYS=[];
 
 function loadData(){
   setLive('yellow','refreshing…');
-  fetch('/api/data')
-    .then(r=>r.json())
-    .then(d=>{
-      document.getElementById('spinner').style.display='none';
-      document.getElementById('app').style.display='block';
-      if(!d.ok) showErr('Could not reach Issue Tracker sheet. Make sure it is publicly accessible.');
-      else document.getElementById('errBanner').style.display='none';
+  fetch('/api/data').then(r=>r.json()).then(d=>{
+    document.getElementById('spinner').style.display='none';
+    document.getElementById('app').style.display='block';
+    if(!d.ok) showErr('Issue Tracker sheet error: '+d.error);
+    else document.getElementById('errBanner').style.display='none';
 
-      ALL_ROWS=d.rows;
-      DAILY_DATA=d.daily_trend||[];
-      MONTHLY_DATA=d.monthly_trend||[];
-      if(DAILY_DATA.length>0) ACTIVE_KEYS=Object.keys(DAILY_DATA[0].per_member||{});
+    ALL=d.rows; DDATA=d.daily_trend||[]; MDATA=d.monthly_trend||[];
+    if(DDATA.length) AKEYS=Object.keys(DDATA[0].per_member||{});
 
-      renderTopMetrics(d.summary);
-      renderMemberCards(d.members);
-      renderCatChart(d.cat_chart);
-      renderDailyChart();
-      renderMonthlyChart();
-      populateFilters(d.dates,d.cats);
-      renderTable();
+    renderMetrics(d.summary);
+    renderMemberCards(d.members);
+    renderCatChart(d.cat_chart);
+    renderDailyChart();
+    renderMonthlyChart();
+    populateFilters(d.dates,d.cats);
+    renderIssueTable();
 
-      // Feedback
-      if(d.feedback){
-        ALL_FB_ROWS=d.feedback.rows||[];
-        renderFeedbackSummary(d.feedback);
-        renderFeedbackPerMember(d.feedback.per_member||{});
-        renderFeedbackTable();
-      }
+    const fb=d.feedback||{};
+    FB=fb.rows||[];
+    renderFbMetrics(fb);
+    renderFbPerMember(fb.per_member||{});
+    renderFbTable();
 
-      setLive('green','live');
-      document.getElementById('lastUpd').textContent='Last updated: '+new Date().toLocaleTimeString()+' — auto-refreshes every 90s';
-    })
-    .catch(e=>{
-      setLive('yellow','error');
-      showErr('Failed to load data: '+e.message);
-      document.getElementById('spinner').style.display='none';
-    });
+    setLive('green','live');
+    document.getElementById('lastUpd').textContent='Updated: '+new Date().toLocaleTimeString()+' · auto-refresh 90s';
+  }).catch(e=>{
+    setLive('yellow','error');
+    showErr('Failed: '+e.message);
+    document.getElementById('spinner').style.display='none';
+  });
 }
 
-function setLive(color,text){
-  const dot=document.getElementById('liveDot');
-  dot.className='live-dot '+(color==='green'?'green':'yellow');
-  document.getElementById('liveText').textContent=text;
+function setLive(c,t){
+  document.getElementById('liveDot').className='live-dot '+(c==='green'?'green':'yellow');
+  document.getElementById('liveText').textContent=t;
 }
-function showErr(msg){
+function showErr(m){
   const b=document.getElementById('errBanner');
-  b.style.display='block';b.textContent='⚠ '+msg;
+  b.style.display='block';b.textContent='⚠ '+m;
 }
 
-function renderTopMetrics(s){
-  const ratioCol=s.ratio>=80?'#3B6D11':s.ratio>=50?'#854F0B':'#A32D2D';
+/* ── Issue Tracker metrics ── */
+function renderMetrics(s){
+  const rc=s.ratio>=80?'#3B6D11':s.ratio>=50?'#854F0B':'#A32D2D';
   document.getElementById('topMetrics').innerHTML=`
-    <div class="metric"><div class="metric-label">Total issues (team)</div><div class="metric-val">${s.total}</div></div>
+    <div class="metric"><div class="metric-label">Total issues</div><div class="metric-val">${s.total}</div></div>
     <div class="metric"><div class="metric-label">Solved</div><div class="metric-val" style="color:#3B6D11">${s.solved}</div></div>
-    <div class="metric"><div class="metric-label">Solve ratio</div><div class="metric-val" style="color:${ratioCol}">${s.ratio}%</div></div>
-    <div class="metric"><div class="metric-label">IR mails raised</div><div class="metric-val" style="color:#185FA5">${s.ir}</div></div>
-    <div class="metric"><div class="metric-label">Urgent issues</div><div class="metric-val" style="color:#854F0B">${s.urgent}</div></div>
-  `;
+    <div class="metric"><div class="metric-label">Solve ratio</div><div class="metric-val" style="color:${rc}">${s.ratio}%</div></div>
+    <div class="metric"><div class="metric-label">IR mails</div><div class="metric-val" style="color:#185FA5">${s.ir}</div></div>
+    <div class="metric"><div class="metric-label">Urgent</div><div class="metric-val" style="color:#854F0B">${s.urgent}</div></div>`;
 }
 
+/* ── Member cards ── */
 function renderMemberCards(members){
-  let html='';
+  let h='';
   members.forEach(m=>{
-    if(m.vacant){
-      html+=`<div class="member-card vacant"><div class="member-header">
-        <div class="avatar av-vacant">?</div>
-        <div><div class="member-name" style="color:#999">Seat vacant</div><div class="member-role">Hire pending</div></div>
-      </div></div>`;
-      return;
-    }
-    const ratioClass=m.ratio>=80?'good':m.ratio>=50?'mid':'bad';
-    const barClass=m.ratio>=80?'bar-good':m.ratio>=50?'bar-mid':'bar-bad';
-    const avClass=MEMBER_AVCLASS[m.key]||'av-vacant';
-    const topCats=(m.top_cats||[]).map(([c,n])=>`<span class="cat-pill">${c} (${n})</span>`).join('');
-    const urgAlert=m.urgent>0?`<div class="urgent-alert">⚠ ${m.urgent} urgent issue${m.urgent>1?'s':''} need attention</div>`:'';
-    html+=`<div class="member-card ${m.key}">
+    if(m.vacant){h+=`<div class="member-card vacant"><div class="member-header"><div class="avatar av-vacant">?</div><div><div class="member-name" style="color:#999">Seat vacant</div><div class="member-role">Hire pending</div></div></div></div>`;return;}
+    const rc=m.ratio>=80?'good':m.ratio>=50?'mid':'bad';
+    const bc=m.ratio>=80?'bg-good':m.ratio>=50?'bg-mid':'bg-bad';
+    const tc=(m.top_cats||[]).map(([c,n])=>`<span class="cat-pill">${c} (${n})</span>`).join('');
+    const ua=m.urgent>0?`<div class="urg-alert">⚠ ${m.urgent} urgent</div>`:'';
+    h+=`<div class="member-card ${m.key}">
       <div class="member-header">
-        <div class="avatar ${avClass}">${m.initials}</div>
+        <div class="avatar ${AVC[m.key]||'av-vacant'}">${m.initials}</div>
         <div style="flex:1;min-width:0"><div class="member-name">${m.name}</div><div class="member-role">KAM</div></div>
-        <span class="ratio-badge ${ratioClass}">${m.ratio}% solved</span>
+        <span class="ratio-badge ${rc}">${m.ratio}% solved</span>
       </div>
       <div class="mini-stats">
         <div class="mini-stat"><div class="mini-stat-val sv-${m.key}">${m.total}</div><div class="mini-stat-lbl">total</div></div>
-        <div class="mini-stat s-solved"><div class="mini-stat-val sv-solved">${m.solved}</div><div class="mini-stat-lbl">solved</div></div>
-        <div class="mini-stat s-pending"><div class="mini-stat-val sv-pending">${m.pending}</div><div class="mini-stat-lbl">pending</div></div>
-        <div class="mini-stat s-ir"><div class="mini-stat-val sv-ir">${m.ir_count}</div><div class="mini-stat-lbl">IR mails</div></div>
+        <div class="mini-stat s-s"><div class="mini-stat-val sv-s">${m.solved}</div><div class="mini-stat-lbl">solved</div></div>
+        <div class="mini-stat s-p"><div class="mini-stat-val sv-p">${m.pending}</div><div class="mini-stat-lbl">pending</div></div>
+        <div class="mini-stat s-i"><div class="mini-stat-val sv-i">${m.ir_count}</div><div class="mini-stat-lbl">IR mails</div></div>
       </div>
       <div style="font-size:11px;color:#888">Solve ratio</div>
-      <div class="ratio-bar-bg"><div class="ratio-bar ${barClass}" style="width:${m.ratio}%"></div></div>
+      <div class="rbar-bg"><div class="rbar ${bc}" style="width:${m.ratio}%"></div></div>
       <div style="font-size:11px;color:#888;margin-top:10px">Top categories</div>
-      <div class="top-cats">${topCats||'<span style="font-size:11px;color:#aaa">No data</span>'}</div>
-      ${urgAlert}
-    </div>`;
+      <div class="top-cats">${tc||'<span style="font-size:11px;color:#aaa">No data</span>'}</div>
+      ${ua}</div>`;
   });
-  document.getElementById('memberCards').innerHTML=html;
+  document.getElementById('memberCards').innerHTML=h;
 }
 
-function renderCatChart(catData){
-  const labels=catData.map(([c])=>c);
-  const data=catData.map(([,n])=>n);
-  document.getElementById('catLegend').innerHTML=labels.map((l,i)=>
-    `<span class="legend-item"><span class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></span>${l}</span>`
-  ).join('');
-  if(CAT_CHART)CAT_CHART.destroy();
-  CAT_CHART=new Chart(document.getElementById('catChart'),{
-    type:'bar',
-    data:{labels,datasets:[{label:'Issues',data,backgroundColor:COLORS.slice(0,labels.length),borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.y} issues`}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#888',font:{size:10},autoSkip:false,maxRotation:30}},
-              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1}}}}
-  });
+/* ── Category chart ── */
+function renderCatChart(data){
+  const labels=data.map(([c])=>c),vals=data.map(([,n])=>n);
+  document.getElementById('catLegend').innerHTML=labels.map((l,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${CLR[i%CLR.length]}"></span>${l}</span>`).join('');
+  if(CAT_C)CAT_C.destroy();
+  CAT_C=new Chart(document.getElementById('catChart'),{type:'bar',
+    data:{labels,datasets:[{label:'Issues',data:vals,backgroundColor:CLR.slice(0,labels.length),borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{color:'#888',font:{size:10},maxRotation:30}},
+              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1}}}}});
 }
 
-function setDayRange(n){
-  DAY_RANGE=n;
-  document.getElementById('tgl7').className='tgl'+(n===7?' on':'');
-  document.getElementById('tgl30').className='tgl'+(n===30?' on':'');
-  document.getElementById('dayRangeLabel').textContent=n;
-  renderDailyChart();
-}
-function setDayView(v){
-  DAY_VIEW=v;
-  document.getElementById('tglAll').className='tgl'+(v==='all'?' on':'');
-  document.getElementById('tglPer').className='tgl'+(v==='per'?' on':'');
-  renderDailyChart();
-}
-
+/* ── Daily chart ── */
+function setDayRange(n){DR=n;document.getElementById('tgl7').className='tgl'+(n===7?' on':'');document.getElementById('tgl30').className='tgl'+(n===30?' on':'');document.getElementById('dayLabel').textContent=n;renderDailyChart();}
+function setDayView(v){DV=v;document.getElementById('tglDA').className='tgl'+(v==='all'?' on':'');document.getElementById('tglDP').className='tgl'+(v==='per'?' on':'');renderDailyChart();}
 function renderDailyChart(){
-  if(!DAILY_DATA.length) return;
-  const slice=DAILY_DATA.slice(DAILY_DATA.length-DAY_RANGE);
-  const labels=slice.map(d=>fmtDate(d.date));
-  const todayTotal=DAILY_DATA[DAILY_DATA.length-1]?.total||0;
-  document.getElementById('todayBadge').textContent='Today: '+todayTotal;
-  let datasets=[];
-  if(DAY_VIEW==='all'){
-    datasets=[{label:'All members',data:slice.map(d=>d.total),borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.1)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}];
+  if(!DDATA.length)return;
+  const sl=DDATA.slice(DDATA.length-DR);
+  const labels=sl.map(d=>fd(d.date));
+  document.getElementById('todayBadge').textContent='Today: '+(DDATA[DDATA.length-1]?.total||0);
+  let ds=[];
+  if(DV==='all'){
+    ds=[{label:'All',data:sl.map(d=>d.total),borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.1)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}];
     document.getElementById('dailyLegend').innerHTML=`<span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>All members</span>`;
   } else {
-    datasets=ACTIVE_KEYS.map((key,i)=>({
-      label:MEMBER_NAMES[key]||key,data:slice.map(d=>d.per_member[key]||0),
-      borderColor:MEMBER_COLORS[key]||COLORS[i],backgroundColor:(MEMBER_COLORS[key]||COLORS[i])+'22',
-      fill:false,tension:0.3,pointRadius:3,borderWidth:2
-    }));
-    document.getElementById('dailyLegend').innerHTML=ACTIVE_KEYS.map((key,i)=>
-      `<span class="legend-item"><span class="legend-dot" style="background:${MEMBER_COLORS[key]||COLORS[i]}"></span>${MEMBER_NAMES[key]||key}</span>`
-    ).join('');
+    ds=AKEYS.map((k,i)=>({label:MN[k]||k,data:sl.map(d=>d.per_member[k]||0),borderColor:MC[k]||CLR[i],backgroundColor:(MC[k]||CLR[i])+'22',fill:false,tension:0.3,pointRadius:3,borderWidth:2}));
+    document.getElementById('dailyLegend').innerHTML=AKEYS.map((k,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${MC[k]||CLR[i]}"></span>${MN[k]||k}</span>`).join('');
   }
-  if(DAILY_CHART)DAILY_CHART.destroy();
-  DAILY_CHART=new Chart(document.getElementById('dailyChart'),{
-    type:'line',data:{labels,datasets},
+  if(DAY_C)DAY_C.destroy();
+  DAY_C=new Chart(document.getElementById('dailyChart'),{type:'line',data:{labels,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y} issues`}}},
-      scales:{x:{grid:{display:false},ticks:{color:'#888',font:{size:10},maxRotation:40,autoSkip:true,maxTicksLimit:DAY_RANGE<=7?7:15}},
-              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1},beginAtZero:true}}}
-  });
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{color:'#888',font:{size:10},maxRotation:40,autoSkip:true,maxTicksLimit:15}},
+              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1},beginAtZero:true}}}});
 }
 
-function setMonthView(v){
-  MONTH_VIEW=v;
-  document.getElementById('tglMAll').className='tgl'+(v==='all'?' on':'');
-  document.getElementById('tglMPer').className='tgl'+(v==='per'?' on':'');
-  renderMonthlyChart();
-}
+/* ── Monthly chart ── */
+function setMonthView(v){MV=v;document.getElementById('tglMA').className='tgl'+(v==='all'?' on':'');document.getElementById('tglMP').className='tgl'+(v==='per'?' on':'');renderMonthlyChart();}
 function renderMonthlyChart(){
-  if(!MONTHLY_DATA.length) return;
-  const labels=MONTHLY_DATA.map(d=>fmtMonth(d.month));
-  let datasets=[];
-  if(MONTH_VIEW==='all'){
-    datasets=[{label:'All members',data:MONTHLY_DATA.map(d=>d.total),backgroundColor:'#378ADD',borderWidth:0,borderRadius:4}];
+  if(!MDATA.length)return;
+  const labels=MDATA.map(d=>fm(d.month));
+  let ds=[];
+  if(MV==='all'){
+    ds=[{label:'All',data:MDATA.map(d=>d.total),backgroundColor:'#378ADD',borderWidth:0,borderRadius:4}];
     document.getElementById('monthlyLegend').innerHTML=`<span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>All members</span>`;
   } else {
-    datasets=ACTIVE_KEYS.map((key,i)=>({
-      label:MEMBER_NAMES[key]||key,data:MONTHLY_DATA.map(d=>d[key]||0),
-      backgroundColor:MEMBER_COLORS[key]||COLORS[i],borderWidth:0,borderRadius:4
-    }));
-    document.getElementById('monthlyLegend').innerHTML=ACTIVE_KEYS.map((key,i)=>
-      `<span class="legend-item"><span class="legend-dot" style="background:${MEMBER_COLORS[key]||COLORS[i]}"></span>${MEMBER_NAMES[key]||key}</span>`
-    ).join('');
+    ds=AKEYS.map((k,i)=>({label:MN[k]||k,data:MDATA.map(d=>d[k]||0),backgroundColor:MC[k]||CLR[i],borderWidth:0,borderRadius:4}));
+    document.getElementById('monthlyLegend').innerHTML=AKEYS.map((k,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${MC[k]||CLR[i]}"></span>${MN[k]||k}</span>`).join('');
   }
-  if(MONTHLY_CHART)MONTHLY_CHART.destroy();
-  MONTHLY_CHART=new Chart(document.getElementById('monthlyChart'),{
-    type:'bar',data:{labels,datasets},
+  if(MON_C)MON_C.destroy();
+  MON_C=new Chart(document.getElementById('monthlyChart'),{type:'bar',data:{labels,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y} issues`}}},
+      plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false},ticks:{color:'#888',font:{size:11}}},
-              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1},beginAtZero:true}}}
-  });
+              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1},beginAtZero:true}}}});
 }
 
-// ---- Feedback section ----
-function renderFeedbackSummary(fb){
-  const ratioCol=fb.ratio>=80?'#1D9E75':fb.ratio>=50?'#BA7517':'#A32D2D';
-  document.getElementById('fbSummary').innerHTML=`
-    <div class="fb-metric fb-total">
-      <div class="fb-metric-label">✉ Total mails raised</div>
-      <div class="fb-metric-val" style="color:#4C3D9E">${fb.total}</div>
-    </div>
-    <div class="fb-metric fb-pending">
-      <div class="fb-metric-label">⏳ Pending</div>
-      <div class="fb-metric-val" style="color:#B25E00">${fb.pending}</div>
-    </div>
-    <div class="fb-metric fb-solved">
-      <div class="fb-metric-label">✅ Solved</div>
-      <div class="fb-metric-val" style="color:#1D9E75">${fb.solved}</div>
-    </div>
-    <div class="fb-metric fb-ratio">
-      <div class="fb-metric-label">📊 Solve ratio</div>
-      <div class="fb-metric-val" style="color:${ratioCol}">${fb.ratio}%</div>
-    </div>
-  `;
+/* ── Feedback metrics ── */
+function renderFbMetrics(fb){
+  const total=fb.total||0,pend=fb.pending||0,solv=fb.solved||0,rat=fb.ratio||0;
+  const rc=rat>=80?'#1D9E75':rat>=50?'#BA7517':'#A32D2D';
+  document.getElementById('fbMetrics').innerHTML=`
+    <div class="metric m-mail"><div class="metric-label">✉ Total mails raised</div><div class="metric-val" style="color:#4C3D9E">${total}</div></div>
+    <div class="metric m-pend"><div class="metric-label">⏳ Pending</div><div class="metric-val" style="color:#B25E00">${pend}</div></div>
+    <div class="metric m-solv"><div class="metric-label">✅ Solved</div><div class="metric-val" style="color:#1D9E75">${solv}</div></div>
+    <div class="metric m-rat"><div class="metric-label">📊 Solve ratio</div><div class="metric-val" style="color:${rc}">${rat}%</div></div>`;
 }
 
-function renderFeedbackPerMember(perMember){
-  let html='';
-  Object.entries(perMember).forEach(([key, stats])=>{
-    const name=MEMBER_NAMES[key]||key;
-    const col=MEMBER_COLORS[key]||'#888';
-    const avClass=MEMBER_AVCLASS[key]||'av-vacant';
-    const initials=key==='asif'?'AA':'NN';
-    const ratio=stats.total>0?Math.round(stats.solved/stats.total*100):0;
-    html+=`<div class="fb-member-card">
-      <div class="fb-member-name">
-        <div class="avatar ${avClass}" style="width:30px;height:30px;font-size:11px">${initials}</div>
-        <span style="color:${col}">${name}</span>
+/* ── Feedback per member ── */
+function renderFbPerMember(pm){
+  let h='';
+  Object.entries(pm).forEach(([key,s])=>{
+    const col=MC[key]||'#888';
+    const av=AVC[key]||'av-vacant';
+    const init=key==='asif'?'AA':'NN';
+    const rat=s.total>0?Math.round(s.solved/s.total*100):0;
+    h+=`<div class="fb-card">
+      <div class="fb-card-name">
+        <div class="avatar ${av}" style="width:30px;height:30px;font-size:11px">${init}</div>
+        <span style="color:${col};font-weight:500">${MN[key]||key}</span>
       </div>
-      <div class="fb-bars">
-        <div class="fb-bar-item fbt"><div class="fb-bar-val">${stats.total}</div><div class="fb-bar-lbl">raised</div></div>
-        <div class="fb-bar-item fbp"><div class="fb-bar-val">${stats.pending}</div><div class="fb-bar-lbl">pending</div></div>
-        <div class="fb-bar-item fbs"><div class="fb-bar-val">${stats.solved}</div><div class="fb-bar-lbl">solved</div></div>
+      <div class="fb-stats">
+        <div class="fb-stat fbt"><div class="fb-stat-val">${s.total}</div><div class="fb-stat-lbl">raised</div></div>
+        <div class="fb-stat fbp"><div class="fb-stat-val">${s.pending}</div><div class="fb-stat-lbl">pending</div></div>
+        <div class="fb-stat fbs"><div class="fb-stat-val">${s.solved}</div><div class="fb-stat-lbl">solved</div></div>
       </div>
-      <div style="font-size:10px;color:#888;margin-top:8px">Solve ratio: ${ratio}%</div>
-      <div class="fb-ratio-bar-bg"><div class="fb-ratio-bar" style="width:${ratio}%"></div></div>
+      <div style="font-size:10px;color:#888;margin-top:8px">Solve ratio: ${rat}%</div>
+      <div class="rbar-bg"><div class="rbar bg-good" style="width:${rat}%;background:#1D9E75"></div></div>
     </div>`;
   });
-  document.getElementById('fbPerMember').innerHTML=html;
+  document.getElementById('fbPerMember').innerHTML=h||'<p style="color:#aaa;font-size:12px">No feedback data yet.</p>';
 }
 
-function renderFeedbackTable(){
+/* ── Feedback table ── */
+function renderFbTable(){
   const q=document.getElementById('fbSearch').value.toLowerCase();
-  const filter=document.getElementById('fbFilter').value;
-  const member=document.getElementById('fbMember').value;
-
-  const rows=ALL_FB_ROWS.filter(r=>{
-    if(filter==='pending'&&!r.pending)return false;
-    if(filter==='solved'&&!r.solved)return false;
-    if(member!=='all'&&r.key!==member)return false;
+  const st=document.getElementById('fbStatus').value;
+  const mb=document.getElementById('fbMember').value;
+  const rows=FB.filter(r=>{
+    if(st==='pending'&&!r.pending)return false;
+    if(st==='solved'&&!r.solved)return false;
+    if(mb!=='all'&&r.key!==mb)return false;
     if(q&&!r.subject.toLowerCase().includes(q))return false;
     return true;
   });
-
-  if(!rows.length){
-    document.getElementById('fbTblWrap').innerHTML='<p style="color:#888;text-align:center;padding:20px">No mails match the filters.</p>';
-    return;
-  }
-
-  let h=`<table><thead><tr>
-    <th>#</th><th>Date</th><th>KAM</th><th>Mail Subject</th><th>Status</th><th>Solved Date</th>
-  </tr></thead><tbody>`;
-
+  if(!rows.length){document.getElementById('fbTable').innerHTML='<p style="color:#888;text-align:center;padding:24px">No mails match.</p>';return;}
+  let h=`<table><thead><tr><th>#</th><th>Date</th><th>KAM</th><th>Mail Subject</th><th>Status</th><th>Solved Date</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
-    const col=MEMBER_COLORS[r.key]||'#888';
-    const initials=r.key==='asif'?'AA':r.key==='nahid'?'NN':'?';
-    const statusPill=r.solved
-      ?`<span class="pill pill-solv">✅ Solved</span>`
-      :r.pending
-        ?`<span class="pill pill-pend">⏳ Pending</span>`
-        :`<span class="pill pill-o">—</span>`;
+    const col=MC[r.key]||'#888';
+    const init=r.key==='asif'?'AA':r.key==='nahid'?'NN':'?';
+    const sp=r.solved?`<span class="pill pill-solv">✅ Solved</span>`:r.pending?`<span class="pill pill-pend">⏳ Pending</span>`:`<span class="pill pill-o">—</span>`;
     h+=`<tr>
       <td style="color:#bbb">${i+1}</td>
       <td>${r.date||'—'}</td>
-      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500">${initials}</span></td>
+      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">${init}</span></td>
       <td>${r.subject}</td>
-      <td>${statusPill}</td>
+      <td>${sp}</td>
       <td>${r.solve_date||'—'}</td>
     </tr>`;
   });
-
   h+=`</tbody></table><div class="tbl-count">${rows.length} mail${rows.length!==1?'s':''} shown</div>`;
-  document.getElementById('fbTblWrap').innerHTML=h;
+  document.getElementById('fbTable').innerHTML=h;
 }
 
-function fmtDate(iso){if(!iso)return '';const[,m,d]=iso.split('-');return`${d}/${m}`;}
-function fmtMonth(ym){if(!ym)return '';const[y,m]=ym.split('-');const n=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${n[parseInt(m)-1]} ${y}`;}
-
+/* ── Issue table ── */
 function populateFilters(dates,cats){
   const df=document.getElementById('dateF'),cf=document.getElementById('catF');
-  df.innerHTML='<option value="">All dates</option>';
-  cf.innerHTML='<option value="">All categories</option>';
+  df.innerHTML='<option value="">All dates</option>';cf.innerHTML='<option value="">All categories</option>';
   dates.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;df.appendChild(o);});
   cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cf.appendChild(o);});
 }
-
-function renderTable(){
+function renderIssueTable(){
   const q=document.getElementById('searchQ').value.toLowerCase();
-  const df=document.getElementById('dateF').value;
-  const cf=document.getElementById('catF').value;
-  const rows=ALL_ROWS.filter(r=>{
-    if(CUR_TAB==='asif'&&r.key!=='asif')return false;
-    if(CUR_TAB==='nahid'&&r.key!=='nahid')return false;
-    if(CUR_TAB==='ir'&&!r.is_ir)return false;
+  const df=document.getElementById('dateF').value,cf=document.getElementById('catF').value;
+  const rows=ALL.filter(r=>{
+    if(TAB==='asif'&&r.key!=='asif')return false;
+    if(TAB==='nahid'&&r.key!=='nahid')return false;
+    if(TAB==='ir'&&!r.is_ir)return false;
     if(df&&!r.date.startsWith(df))return false;
     if(cf&&r.cat!==cf)return false;
-    if(q){const hay=(r.cons+r.comment+r.cat+r.kam).toLowerCase();if(!hay.includes(q))return false;}
+    if(q){const h=(r.cons+r.comment+r.cat+r.kam).toLowerCase();if(!h.includes(q))return false;}
     return true;
   });
-  if(!rows.length){document.getElementById('tblWrap').innerHTML='<p style="color:#888;text-align:center;padding:20px">No issues match the filters.</p>';return;}
-  const INIT={asif:'AA',nahid:'NN'};
-  let h=`<table><thead><tr>
-    <th style="width:28px">#</th><th style="width:88px">Date</th><th style="width:52px">Who</th>
-    <th style="width:150px">Consignment / merchant</th><th style="width:130px">Category</th>
-    <th style="width:62px">Priority</th><th style="width:68px">Status</th><th>IR / comment</th>
-  </tr></thead><tbody>`;
+  if(!rows.length){document.getElementById('tblWrap').innerHTML='<p style="color:#888;text-align:center;padding:24px">No issues match.</p>';return;}
+  const IN={asif:'AA',nahid:'NN'};
+  let h=`<table><thead><tr><th>#</th><th>Date</th><th>Who</th><th>Consignment</th><th>Category</th><th>Priority</th><th>Status</th><th>Comment</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
-    const col=MEMBER_COLORS[r.key]||'#888';
-    const init=INIT[r.key]||'?';
-    const stPill=r.solved?`<span class="pill pill-s">${r.status||'Solved'}</span>`:`<span class="pill pill-o">${r.status||'—'}</span>`;
-    const priPill=r.pri.toLowerCase()==='urgent'?`<span class="pill pill-urg">${r.pri}</span>`:r.pri?`<span class="pill pill-o">${r.pri}</span>`:'—';
-    const shortCom=r.comment.length>90?r.comment.substring(0,90)+'…':r.comment;
+    const col=MC[r.key]||'#888';
+    const sp=r.solved?`<span class="pill pill-s">${r.status||'Solved'}</span>`:`<span class="pill pill-o">${r.status||'—'}</span>`;
+    const pp=r.pri.toLowerCase()==='urgent'?`<span class="pill pill-urg">${r.pri}</span>`:r.pri?`<span class="pill pill-o">${r.pri}</span>`:'—';
+    const sc=r.comment.length>90?r.comment.substring(0,90)+'…':r.comment;
     h+=`<tr>
       <td style="color:#bbb">${i+1}</td><td>${r.date||'—'}</td>
-      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:500">${init}</span></td>
+      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">${IN[r.key]||'?'}</span></td>
       <td>${r.cons||'—'}</td>
       <td>${r.cat||'—'}<br><span style="color:#aaa;font-size:10px">${r.subcat||''}</span></td>
-      <td>${priPill}</td><td>${stPill}</td>
-      <td>${r.is_ir?'<span class="pill pill-ir">✉ IR mail</span><br>':''}<span style="color:#888">${shortCom||'—'}</span></td>
+      <td>${pp}</td><td>${sp}</td>
+      <td>${r.is_ir?'<span class="pill pill-ir">✉ IR</span><br>':''}<span style="color:#888">${sc||'—'}</span></td>
     </tr>`;
   });
   h+=`</tbody></table><div class="tbl-count">${rows.length} issue${rows.length!==1?'s':''} shown</div>`;
   document.getElementById('tblWrap').innerHTML=h;
 }
 
-document.querySelectorAll('.tab').forEach(btn=>{
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
-    this.classList.add('on');CUR_TAB=this.dataset.t;renderTable();
-  });
-});
+function fd(iso){if(!iso)return '';const[,m,d]=iso.split('-');return`${d}/${m}`;}
+function fm(ym){if(!ym)return '';const[y,m]=ym.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]+' '+y;}
+
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',function(){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  this.classList.add('on');TAB=this.dataset.t;renderIssueTable();
+}));
 ['searchQ','dateF','catF'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',renderTable);
-  document.getElementById(id).addEventListener('change',renderTable);
+  document.getElementById(id).addEventListener('input',renderIssueTable);
+  document.getElementById(id).addEventListener('change',renderIssueTable);
 });
-['fbSearch','fbFilter','fbMember'].forEach(id=>{
-  document.getElementById(id).addEventListener('input',renderFeedbackTable);
-  document.getElementById(id).addEventListener('change',renderFeedbackTable);
+['fbSearch','fbStatus','fbMember'].forEach(id=>{
+  document.getElementById(id).addEventListener('input',renderFbTable);
+  document.getElementById(id).addEventListener('change',renderFbTable);
 });
 
 loadData();
