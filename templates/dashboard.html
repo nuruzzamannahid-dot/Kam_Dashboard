@@ -6,96 +6,124 @@
 <title>KAM Team Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
+/* ── Reset & base ── */
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;color:#1a1a18;font-size:14px;line-height:1.5}
-.topbar{background:#fff;border-bottom:1px solid #e5e5e2;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
-.topbar h1{font-size:16px;font-weight:600}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#080810;color:#e2e2f0;font-size:14px;line-height:1.5}
+
+/* ── Scanline overlay for cyberpunk feel ── */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.07) 2px,rgba(0,0,0,.07) 4px);pointer-events:none;z-index:9999}
+
+/* ── Topbar ── */
+.topbar{background:#0d0d1f;border-bottom:1px solid #00d4ff33;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px #00d4ff18}
+.topbar h1{font-size:16px;font-weight:700;color:#fff;letter-spacing:.04em;text-shadow:0 0 18px #00d4ffaa}
 .topbar-right{display:flex;align-items:center;gap:10px}
-.live-dot{width:8px;height:8px;border-radius:50%;background:#ccc;display:inline-block;margin-right:4px;transition:background .3s}
-.live-dot.green{background:#639922}.live-dot.yellow{background:#EF9F27}
-.last-upd{font-size:11px;color:#888}
-.btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;cursor:pointer;color:#444}
-.btn:hover{background:#f0f0ec}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#333;display:inline-block;margin-right:4px;transition:background .3s}
+.live-dot.green{background:#39ff14;box-shadow:0 0 8px #39ff14}.live-dot.yellow{background:#ffe000;box-shadow:0 0 8px #ffe000}
+.last-upd{font-size:11px;color:#5566aa}
+.btn{font-size:12px;padding:6px 14px;border-radius:8px;border:1px solid #00d4ff55;background:transparent;cursor:pointer;color:#00d4ff;transition:all .2s}
+.btn:hover{background:#00d4ff22;box-shadow:0 0 12px #00d4ff44;color:#fff}
 .container{max-width:1200px;margin:0 auto;padding:20px}
-/* Section headers */
-.sec-hdr{display:flex;align-items:center;gap:10px;margin:28px 0 14px;font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.06em}
-.sec-hdr::after{content:'';flex:1;height:1px;background:#e0e0dc}
-/* Metric cards */
+
+/* ── Section headers ── */
+.sec-hdr{display:flex;align-items:center;gap:10px;margin:28px 0 14px;font-size:12px;font-weight:700;color:#bf5fff;text-transform:uppercase;letter-spacing:.1em;text-shadow:0 0 10px #bf5fff88}
+.sec-hdr::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,#bf5fff44,transparent)}
+
+/* ── Metric cards ── */
 .metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.metric{background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e8e8e5}
-.metric.m-mail{border-left:4px solid #7F77DD}
-.metric.m-pend{border-left:4px solid #EF9F27}
-.metric.m-solv{border-left:4px solid #1D9E75}
-.metric.m-rat{border-left:4px solid #378ADD}
-.metric-label{font-size:11px;color:#888;margin-bottom:4px}
-.metric-val{font-size:26px;font-weight:600}
-/* Member cards */
+.metric{background:#0d0d1f;border-radius:10px;padding:14px 16px;border:1px solid #1e2044;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.metric::before{content:'';position:absolute;inset:0;opacity:.04;background:linear-gradient(135deg,#fff,transparent)}
+.metric:hover{transform:translateY(-2px)}
+.metric.m-mail{border-left:3px solid #bf5fff;box-shadow:0 0 20px #bf5fff18}.metric.m-mail:hover{box-shadow:0 4px 24px #bf5fff33}
+.metric.m-pend{border-left:3px solid #ffe000;box-shadow:0 0 20px #ffe00018}.metric.m-pend:hover{box-shadow:0 4px 24px #ffe00033}
+.metric.m-solv{border-left:3px solid #39ff14;box-shadow:0 0 20px #39ff1418}.metric.m-solv:hover{box-shadow:0 4px 24px #39ff1433}
+.metric.m-rat{border-left:3px solid #00d4ff;box-shadow:0 0 20px #00d4ff18}.metric.m-rat:hover{box-shadow:0 4px 24px #00d4ff33}
+.metric-label{font-size:11px;color:#5566aa;margin-bottom:4px}
+.metric-val{font-size:26px;font-weight:700;text-shadow:0 0 14px currentColor}
+
+/* ── Member cards ── */
 .members-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px}
-.member-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e8e8e5;border-left:4px solid #ccc}
-.member-card.asif{border-left-color:#378ADD}.member-card.nahid{border-left-color:#1D9E75}
-.member-card.vacant{opacity:.4;border-style:dashed}
-.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
-.av-asif{background:#E6F1FB;color:#0C447C}.av-nahid{background:#E1F5EE;color:#085041}.av-vacant{background:#f0f0ec;color:#888}
+.member-card{background:#0d0d1f;border-radius:12px;padding:18px;border:1px solid #1e2044;border-left:3px solid #333;transition:transform .2s,box-shadow .2s}
+.member-card:hover{transform:translateY(-2px)}
+.member-card.asif{border-left-color:#00d4ff;box-shadow:0 0 24px #00d4ff18}.member-card.asif:hover{box-shadow:0 4px 28px #00d4ff35}
+.member-card.nahid{border-left-color:#39ff14;box-shadow:0 0 24px #39ff1418}.member-card.nahid:hover{box-shadow:0 4px 28px #39ff1435}
+.member-card.vacant{opacity:.3;border-style:dashed}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.av-asif{background:#00d4ff22;color:#00d4ff;box-shadow:0 0 12px #00d4ff55;border:1px solid #00d4ff44}
+.av-nahid{background:#39ff1422;color:#39ff14;box-shadow:0 0 12px #39ff1455;border:1px solid #39ff1444}
+.av-vacant{background:#1e2044;color:#445;border:1px solid #2a2a44}
 .member-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.member-name{font-size:14px;font-weight:500}
-.member-role{font-size:11px;color:#888}
-.ratio-badge{font-size:11px;padding:3px 9px;border-radius:4px;margin-left:auto}
-.good{background:#EAF3DE;color:#27500A}.mid{background:#FAEEDA;color:#633806}.bad{background:#FCEBEB;color:#791F1F}
+.member-name{font-size:14px;font-weight:600;color:#e2e2f0}
+.member-role{font-size:11px;color:#5566aa}
+.ratio-badge{font-size:11px;padding:3px 9px;border-radius:4px;margin-left:auto;font-weight:600}
+.good{background:#39ff1420;color:#39ff14;border:1px solid #39ff1444;text-shadow:0 0 8px #39ff14}
+.mid{background:#ffe00020;color:#ffe000;border:1px solid #ffe00044;text-shadow:0 0 8px #ffe000}
+.bad{background:#ff2d7820;color:#ff2d78;border:1px solid #ff2d7844;text-shadow:0 0 8px #ff2d78}
 .mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.mini-stat{text-align:center;padding:8px 4px;border-radius:8px;background:#f8f8f6}
-.mini-stat.s-s{background:#EAF3DE}.mini-stat.s-p{background:#FAEEDA}.mini-stat.s-i{background:#E6F1FB}
-.mini-stat-val{font-size:17px;font-weight:600}
-.mini-stat-lbl{font-size:10px;color:#888}
-.sv-asif{color:#378ADD}.sv-nahid{color:#1D9E75}.sv-s{color:#27500A}.sv-p{color:#633806}.sv-i{color:#0C447C}
-.rbar-bg{background:#e8e8e5;border-radius:3px;height:6px;margin-top:4px}
-.rbar{height:6px;border-radius:3px;transition:width .5s}
-.bg-good{background:#3B6D11}.bg-mid{background:#BA7517}.bg-bad{background:#A32D2D}
+.mini-stat{text-align:center;padding:8px 4px;border-radius:8px;background:#13132a;border:1px solid #1e2044}
+.mini-stat.s-s{background:#39ff1412;border-color:#39ff1430}
+.mini-stat.s-p{background:#ffe00012;border-color:#ffe00030}
+.mini-stat.s-i{background:#00d4ff12;border-color:#00d4ff30}
+.mini-stat-val{font-size:17px;font-weight:700;text-shadow:0 0 10px currentColor}
+.mini-stat-lbl{font-size:10px;color:#5566aa}
+.sv-asif{color:#00d4ff}.sv-nahid{color:#39ff14}.sv-s{color:#39ff14}.sv-p{color:#ffe000}.sv-i{color:#00d4ff}
+.rbar-bg{background:#1e2044;border-radius:3px;height:6px;margin-top:4px}
+.rbar{height:6px;border-radius:3px;transition:width .6s;box-shadow:0 0 8px currentColor}
+.bg-good{background:#39ff14;box-shadow:0 0 8px #39ff14}.bg-mid{background:#ffe000;box-shadow:0 0 8px #ffe000}.bg-bad{background:#ff2d78;box-shadow:0 0 8px #ff2d78}
 .top-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
-.cat-pill{font-size:10px;padding:2px 8px;border-radius:4px;background:#f0f0ec;color:#555}
-.urg-alert{font-size:11px;color:#854F0B;background:#FAEEDA;padding:5px 10px;border-radius:5px;margin-top:10px}
-/* Chart cards */
-.chart-card{background:#fff;border-radius:12px;padding:18px;border:1px solid #e8e8e5;margin-bottom:20px}
+.cat-pill{font-size:10px;padding:2px 8px;border-radius:4px;background:#13132a;color:#8899cc;border:1px solid #2a2a44}
+.urg-alert{font-size:11px;color:#ffe000;background:#ffe00015;padding:5px 10px;border-radius:5px;margin-top:10px;border:1px solid #ffe00033;text-shadow:0 0 8px #ffe000}
+
+/* ── Chart cards ── */
+.chart-card{background:#0d0d1f;border-radius:12px;padding:18px;border:1px solid #1e2044;margin-bottom:20px}
 .card-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-.card-title{font-size:14px;font-weight:500;color:#1a1a18}
+.card-title{font-size:14px;font-weight:600;color:#e2e2f0}
 .toggle-group{display:flex;gap:4px}
-.tgl{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer}
-.tgl.on{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.tgl{font-size:11px;padding:4px 12px;border-radius:6px;border:1px solid #1e2044;background:transparent;color:#5566aa;cursor:pointer;transition:all .2s}
+.tgl:hover{border-color:#00d4ff55;color:#00d4ff}
+.tgl.on{background:#00d4ff22;color:#00d4ff;border-color:#00d4ff;box-shadow:0 0 10px #00d4ff33;text-shadow:0 0 8px #00d4ff}
 .legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#666}
-.legend-dot{width:9px;height:9px;border-radius:2px}
-/* Feedback per-member */
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#5566aa}
+.legend-dot{width:9px;height:9px;border-radius:2px;box-shadow:0 0 6px currentColor}
+
+/* ── Feedback per-member ── */
 .fb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:20px}
-.fb-card{background:#fff;border-radius:10px;padding:16px;border:1px solid #e8e8e5}
-.fb-card-name{font-size:13px;font-weight:500;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.fb-card{background:#0d0d1f;border-radius:10px;padding:16px;border:1px solid #1e2044}
+.fb-card-name{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .fb-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.fb-stat{text-align:center;padding:8px 4px;border-radius:8px}
-.fb-stat.fbt{background:#EDE9FD;color:#4C3D9E}
-.fb-stat.fbp{background:#FAEEDA;color:#7A4A00}
-.fb-stat.fbs{background:#EAF3DE;color:#1A5C00}
-.fb-stat-val{font-size:18px;font-weight:600}
-.fb-stat-lbl{font-size:10px;color:#888}
-/* Tables */
+.fb-stat{text-align:center;padding:8px 4px;border-radius:8px;border:1px solid transparent}
+.fb-stat.fbt{background:#bf5fff18;color:#bf5fff;border-color:#bf5fff33}
+.fb-stat.fbp{background:#ffe00018;color:#ffe000;border-color:#ffe00033}
+.fb-stat.fbs{background:#39ff1418;color:#39ff14;border-color:#39ff1433}
+.fb-stat-val{font-size:18px;font-weight:700;text-shadow:0 0 10px currentColor}
+.fb-stat-lbl{font-size:10px;color:#5566aa}
+
+/* ── Tables ── */
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-.filters input,.filters select{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#333}
-.filters input{flex:1;min-width:160px}
+.filters input,.filters select{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #1e2044;background:#13132a;color:#e2e2f0}
+.filters input::placeholder{color:#3344666}
+.filters input:focus,.filters select:focus{outline:none;border-color:#00d4ff55;box-shadow:0 0 10px #00d4ff22}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.tab{font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer}
-.tab.on{background:#f0f0ec;color:#1a1a18;font-weight:500}
+.tab{font-size:12px;padding:5px 14px;border-radius:8px;border:1px solid #1e2044;background:transparent;color:#5566aa;cursor:pointer;transition:all .2s}
+.tab:hover{border-color:#bf5fff55;color:#bf5fff}
+.tab.on{background:#bf5fff22;color:#bf5fff;border-color:#bf5fff;box-shadow:0 0 10px #bf5fff33;text-shadow:0 0 8px #bf5fff}
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;padding:8px 10px;border-bottom:1px solid #eee;color:#888;font-weight:500;font-size:11px;white-space:nowrap}
-td{padding:8px 10px;border-bottom:1px solid #f0f0ec;vertical-align:top;word-break:break-word}
+th{text-align:left;padding:8px 10px;border-bottom:1px solid #1e2044;color:#5566aa;font-weight:600;font-size:11px;white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
+td{padding:8px 10px;border-bottom:1px solid #13132a;vertical-align:top;word-break:break-word;color:#c0c8e8}
 tr:last-child td{border-bottom:none}
-tr:hover td{background:#fafaf8}
-.pill{font-size:10px;padding:2px 8px;border-radius:4px;display:inline-block}
-.pill-s{background:#EAF3DE;color:#27500A}.pill-p{background:#FAEEDA;color:#633806}
-.pill-o{background:#f0f0ec;color:#555}.pill-ir{background:#E6F1FB;color:#0C447C}
-.pill-urg{background:#FAEEDA;color:#633806}
-.pill-pend{background:#FFF3CD;color:#7A4A00}.pill-solv{background:#EAF3DE;color:#1A5C00}
-.tbl-count{font-size:11px;color:#888;text-align:right;margin-top:8px}
-.err-banner{background:#FAEEDA;border-radius:8px;padding:10px 14px;font-size:12px;color:#633806;margin-bottom:14px}
-.spinner{text-align:center;padding:40px;color:#888;font-size:13px}
-.today-badge{background:#EAF3DE;color:#27500A;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:500;margin-left:8px}
+tr:hover td{background:#13132a}
+.pill{font-size:10px;padding:2px 8px;border-radius:4px;display:inline-block;font-weight:600;border:1px solid transparent}
+.pill-s{background:#39ff1418;color:#39ff14;border-color:#39ff1444;text-shadow:0 0 6px #39ff14}
+.pill-p{background:#ffe00018;color:#ffe000;border-color:#ffe00044;text-shadow:0 0 6px #ffe000}
+.pill-o{background:#1e2044;color:#5566aa;border-color:#2a2a44}
+.pill-ir{background:#00d4ff18;color:#00d4ff;border-color:#00d4ff44;text-shadow:0 0 6px #00d4ff}
+.pill-urg{background:#ff2d7818;color:#ff2d78;border-color:#ff2d7844;text-shadow:0 0 6px #ff2d78}
+.pill-pend{background:#ffe00018;color:#ffe000;border-color:#ffe00044}
+.pill-solv{background:#39ff1418;color:#39ff14;border-color:#39ff1444}
+.tbl-count{font-size:11px;color:#5566aa;text-align:right;margin-top:8px}
+.err-banner{background:#ff2d7818;border:1px solid #ff2d7844;border-radius:8px;padding:10px 14px;font-size:12px;color:#ff2d78;margin-bottom:14px}
+.spinner{text-align:center;padding:40px;color:#5566aa;font-size:13px;text-shadow:0 0 10px #00d4ff55}
+.today-badge{background:#39ff1420;color:#39ff14;border:1px solid #39ff1444;font-size:11px;padding:3px 10px;border-radius:6px;font-weight:600;margin-left:8px;text-shadow:0 0 8px #39ff14}
 @media(max-width:600px){.members-grid,.fb-grid{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -103,11 +131,11 @@ tr:hover td{background:#fafaf8}
 
 <div class="topbar">
   <div>
-    <h1>KAM Team Dashboard</h1>
+    <h1>⚡ KAM Team Dashboard</h1>
     <div class="last-upd" id="lastUpd">Connecting…</div>
   </div>
   <div class="topbar-right">
-    <span style="font-size:11px;color:#888">
+    <span style="font-size:11px;color:#5566aa">
       <span class="live-dot" id="liveDot"></span><span id="liveText">loading</span>
     </span>
     <button class="btn" onclick="loadData()">&#8635; Refresh</button>
@@ -116,7 +144,7 @@ tr:hover td{background:#fafaf8}
 
 <div class="container">
   <div id="errBanner" style="display:none" class="err-banner"></div>
-  <div id="spinner" class="spinner">Loading live data…</div>
+  <div id="spinner" class="spinner">⚡ Loading live data…</div>
 
   <div id="app" style="display:none">
 
@@ -208,13 +236,22 @@ tr:hover td{background:#fafaf8}
 </div>
 
 <script>
-const MC={asif:'#378ADD',nahid:'#1D9E75'};
+/* ── Neon colour palette ── */
+const MC={asif:'#00d4ff',nahid:'#39ff14'};
 const MN={asif:'Ahmed Asif Rashid',nahid:'Nuruzzaman Nahid'};
 const AVC={asif:'av-asif',nahid:'av-nahid',vacant:'av-vacant'};
-const CLR=['#378ADD','#1D9E75','#D85A30','#7F77DD','#BA7517','#D4537E','#888780','#E24B4A'];
+const CLR=['#00d4ff','#39ff14','#ff2d78','#bf5fff','#ffe000','#ff6600','#00ffcc','#ff00aa'];
+/* Chart.js defaults for dark mode */
+Chart.defaults.color='#5566aa';
+Chart.defaults.borderColor='rgba(30,32,68,0.8)';
 
 let ALL=[],FB=[],CAT_C=null,DAY_C=null,MON_C=null;
 let TAB='all',DR=7,DV='all',MV='all',DDATA=[],MDATA=[],AKEYS=[];
+
+const CHART_OPTS_BASE={
+  responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{backgroundColor:'#0d0d1f',borderColor:'#1e2044',borderWidth:1,titleColor:'#e2e2f0',bodyColor:'#8899cc'}},
+};
 
 function loadData(){
   setLive('yellow','refreshing…');
@@ -261,20 +298,20 @@ function showErr(m){
 
 /* ── Issue Tracker metrics ── */
 function renderMetrics(s){
-  const rc=s.ratio>=80?'#3B6D11':s.ratio>=50?'#854F0B':'#A32D2D';
+  const rc=s.ratio>=80?'#39ff14':s.ratio>=50?'#ffe000':'#ff2d78';
   document.getElementById('topMetrics').innerHTML=`
-    <div class="metric"><div class="metric-label">Total issues</div><div class="metric-val">${s.total}</div></div>
-    <div class="metric"><div class="metric-label">Solved</div><div class="metric-val" style="color:#3B6D11">${s.solved}</div></div>
+    <div class="metric"><div class="metric-label">Total issues</div><div class="metric-val" style="color:#e2e2f0">${s.total}</div></div>
+    <div class="metric"><div class="metric-label">Solved</div><div class="metric-val" style="color:#39ff14">${s.solved}</div></div>
     <div class="metric"><div class="metric-label">Solve ratio</div><div class="metric-val" style="color:${rc}">${s.ratio}%</div></div>
-    <div class="metric"><div class="metric-label">IR mails</div><div class="metric-val" style="color:#185FA5">${s.ir}</div></div>
-    <div class="metric"><div class="metric-label">Urgent</div><div class="metric-val" style="color:#854F0B">${s.urgent}</div></div>`;
+    <div class="metric"><div class="metric-label">IR mails</div><div class="metric-val" style="color:#00d4ff">${s.ir}</div></div>
+    <div class="metric"><div class="metric-label">Urgent</div><div class="metric-val" style="color:#ff2d78">${s.urgent}</div></div>`;
 }
 
 /* ── Member cards ── */
 function renderMemberCards(members){
   let h='';
   members.forEach(m=>{
-    if(m.vacant){h+=`<div class="member-card vacant"><div class="member-header"><div class="avatar av-vacant">?</div><div><div class="member-name" style="color:#999">Seat vacant</div><div class="member-role">Hire pending</div></div></div></div>`;return;}
+    if(m.vacant){h+=`<div class="member-card vacant"><div class="member-header"><div class="avatar av-vacant">?</div><div><div class="member-name" style="color:#333">Seat vacant</div><div class="member-role">Hire pending</div></div></div></div>`;return;}
     const rc=m.ratio>=80?'good':m.ratio>=50?'mid':'bad';
     const bc=m.ratio>=80?'bg-good':m.ratio>=50?'bg-mid':'bg-bad';
     const tc=(m.top_cats||[]).map(([c,n])=>`<span class="cat-pill">${c} (${n})</span>`).join('');
@@ -291,10 +328,10 @@ function renderMemberCards(members){
         <div class="mini-stat s-p"><div class="mini-stat-val sv-p">${m.pending}</div><div class="mini-stat-lbl">pending</div></div>
         <div class="mini-stat s-i"><div class="mini-stat-val sv-i">${m.ir_count}</div><div class="mini-stat-lbl">IR mails</div></div>
       </div>
-      <div style="font-size:11px;color:#888">Solve ratio</div>
+      <div style="font-size:11px;color:#5566aa">Solve ratio</div>
       <div class="rbar-bg"><div class="rbar ${bc}" style="width:${m.ratio}%"></div></div>
-      <div style="font-size:11px;color:#888;margin-top:10px">Top categories</div>
-      <div class="top-cats">${tc||'<span style="font-size:11px;color:#aaa">No data</span>'}</div>
+      <div style="font-size:11px;color:#5566aa;margin-top:10px">Top categories</div>
+      <div class="top-cats">${tc||'<span style="font-size:11px;color:#2a2a44">No data</span>'}</div>
       ${ua}</div>`;
   });
   document.getElementById('memberCards').innerHTML=h;
@@ -303,13 +340,14 @@ function renderMemberCards(members){
 /* ── Category chart ── */
 function renderCatChart(data){
   const labels=data.map(([c])=>c),vals=data.map(([,n])=>n);
-  document.getElementById('catLegend').innerHTML=labels.map((l,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${CLR[i%CLR.length]}"></span>${l}</span>`).join('');
+  document.getElementById('catLegend').innerHTML=labels.map((l,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${CLR[i%CLR.length]};box-shadow:0 0 6px ${CLR[i%CLR.length]}"></span>${l}</span>`).join('');
+  const bgColors=CLR.slice(0,labels.length);
   if(CAT_C)CAT_C.destroy();
   CAT_C=new Chart(document.getElementById('catChart'),{type:'bar',
-    data:{labels,datasets:[{label:'Issues',data:vals,backgroundColor:CLR.slice(0,labels.length),borderWidth:0}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{color:'#888',font:{size:10},maxRotation:30}},
-              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1}}}}});
+    data:{labels,datasets:[{label:'Issues',data:vals,backgroundColor:bgColors.map(c=>c+'55'),borderColor:bgColors,borderWidth:2,borderRadius:4}]},
+    options:{...CHART_OPTS_BASE,
+      scales:{x:{grid:{display:false},ticks:{color:'#5566aa',font:{size:10},maxRotation:30}},
+              y:{grid:{color:'rgba(30,32,68,0.8)'},ticks:{color:'#5566aa',font:{size:10},stepSize:1}}}}});
 }
 
 /* ── Daily chart ── */
@@ -322,18 +360,17 @@ function renderDailyChart(){
   document.getElementById('todayBadge').textContent='Today: '+(DDATA[DDATA.length-1]?.total||0);
   let ds=[];
   if(DV==='all'){
-    ds=[{label:'All',data:sl.map(d=>d.total),borderColor:'#378ADD',backgroundColor:'rgba(55,138,221,0.1)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}];
-    document.getElementById('dailyLegend').innerHTML=`<span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>All members</span>`;
+    ds=[{label:'All',data:sl.map(d=>d.total),borderColor:'#00d4ff',backgroundColor:'rgba(0,212,255,0.08)',fill:true,tension:0.4,pointRadius:4,pointBackgroundColor:'#00d4ff',borderWidth:2,pointBorderColor:'#080810'}];
+    document.getElementById('dailyLegend').innerHTML=`<span class="legend-item"><span class="legend-dot" style="background:#00d4ff;box-shadow:0 0 6px #00d4ff"></span>All members</span>`;
   } else {
-    ds=AKEYS.map((k,i)=>({label:MN[k]||k,data:sl.map(d=>d.per_member[k]||0),borderColor:MC[k]||CLR[i],backgroundColor:(MC[k]||CLR[i])+'22',fill:false,tension:0.3,pointRadius:3,borderWidth:2}));
-    document.getElementById('dailyLegend').innerHTML=AKEYS.map((k,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${MC[k]||CLR[i]}"></span>${MN[k]||k}</span>`).join('');
+    ds=AKEYS.map((k,i)=>({label:MN[k]||k,data:sl.map(d=>d.per_member[k]||0),borderColor:MC[k]||CLR[i],backgroundColor:(MC[k]||CLR[i])+'18',fill:false,tension:0.4,pointRadius:4,pointBackgroundColor:MC[k]||CLR[i],borderWidth:2,pointBorderColor:'#080810'}));
+    document.getElementById('dailyLegend').innerHTML=AKEYS.map((k,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${MC[k]||CLR[i]};box-shadow:0 0 6px ${MC[k]||CLR[i]}"></span>${MN[k]||k}</span>`).join('');
   }
   if(DAY_C)DAY_C.destroy();
   DAY_C=new Chart(document.getElementById('dailyChart'),{type:'line',data:{labels,datasets:ds},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{color:'#888',font:{size:10},maxRotation:40,autoSkip:true,maxTicksLimit:15}},
-              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1},beginAtZero:true}}}});
+    options:{...CHART_OPTS_BASE,interaction:{mode:'index',intersect:false},
+      scales:{x:{grid:{display:false},ticks:{color:'#5566aa',font:{size:10},maxRotation:40,autoSkip:true,maxTicksLimit:15}},
+              y:{grid:{color:'rgba(30,32,68,0.8)'},ticks:{color:'#5566aa',font:{size:10},stepSize:1},beginAtZero:true}}}});
 }
 
 /* ── Monthly chart ── */
@@ -343,28 +380,27 @@ function renderMonthlyChart(){
   const labels=MDATA.map(d=>fm(d.month));
   let ds=[];
   if(MV==='all'){
-    ds=[{label:'All',data:MDATA.map(d=>d.total),backgroundColor:'#378ADD',borderWidth:0,borderRadius:4}];
-    document.getElementById('monthlyLegend').innerHTML=`<span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>All members</span>`;
+    ds=[{label:'All',data:MDATA.map(d=>d.total),backgroundColor:'rgba(0,212,255,0.4)',borderColor:'#00d4ff',borderWidth:2,borderRadius:5}];
+    document.getElementById('monthlyLegend').innerHTML=`<span class="legend-item"><span class="legend-dot" style="background:#00d4ff;box-shadow:0 0 6px #00d4ff"></span>All members</span>`;
   } else {
-    ds=AKEYS.map((k,i)=>({label:MN[k]||k,data:MDATA.map(d=>d[k]||0),backgroundColor:MC[k]||CLR[i],borderWidth:0,borderRadius:4}));
-    document.getElementById('monthlyLegend').innerHTML=AKEYS.map((k,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${MC[k]||CLR[i]}"></span>${MN[k]||k}</span>`).join('');
+    ds=AKEYS.map((k,i)=>({label:MN[k]||k,data:MDATA.map(d=>d[k]||0),backgroundColor:(MC[k]||CLR[i])+'66',borderColor:MC[k]||CLR[i],borderWidth:2,borderRadius:5}));
+    document.getElementById('monthlyLegend').innerHTML=AKEYS.map((k,i)=>`<span class="legend-item"><span class="legend-dot" style="background:${MC[k]||CLR[i]};box-shadow:0 0 6px ${MC[k]||CLR[i]}"></span>${MN[k]||k}</span>`).join('');
   }
   if(MON_C)MON_C.destroy();
   MON_C=new Chart(document.getElementById('monthlyChart'),{type:'bar',data:{labels,datasets:ds},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false},ticks:{color:'#888',font:{size:11}}},
-              y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#888',font:{size:10},stepSize:1},beginAtZero:true}}}});
+    options:{...CHART_OPTS_BASE,interaction:{mode:'index',intersect:false},
+      scales:{x:{grid:{display:false},ticks:{color:'#5566aa',font:{size:11}}},
+              y:{grid:{color:'rgba(30,32,68,0.8)'},ticks:{color:'#5566aa',font:{size:10},stepSize:1},beginAtZero:true}}}});
 }
 
 /* ── Feedback metrics ── */
 function renderFbMetrics(fb){
   const total=fb.total||0,pend=fb.pending||0,solv=fb.solved||0,rat=fb.ratio||0;
-  const rc=rat>=80?'#1D9E75':rat>=50?'#BA7517':'#A32D2D';
+  const rc=rat>=80?'#39ff14':rat>=50?'#ffe000':'#ff2d78';
   document.getElementById('fbMetrics').innerHTML=`
-    <div class="metric m-mail"><div class="metric-label">✉ Total mails raised</div><div class="metric-val" style="color:#4C3D9E">${total}</div></div>
-    <div class="metric m-pend"><div class="metric-label">⏳ Pending</div><div class="metric-val" style="color:#B25E00">${pend}</div></div>
-    <div class="metric m-solv"><div class="metric-label">✅ Solved</div><div class="metric-val" style="color:#1D9E75">${solv}</div></div>
+    <div class="metric m-mail"><div class="metric-label">✉ Total mails raised</div><div class="metric-val" style="color:#bf5fff">${total}</div></div>
+    <div class="metric m-pend"><div class="metric-label">⏳ Pending</div><div class="metric-val" style="color:#ffe000">${pend}</div></div>
+    <div class="metric m-solv"><div class="metric-label">✅ Solved</div><div class="metric-val" style="color:#39ff14">${solv}</div></div>
     <div class="metric m-rat"><div class="metric-label">📊 Solve ratio</div><div class="metric-val" style="color:${rc}">${rat}%</div></div>`;
 }
 
@@ -372,25 +408,25 @@ function renderFbMetrics(fb){
 function renderFbPerMember(pm){
   let h='';
   Object.entries(pm).forEach(([key,s])=>{
-    const col=MC[key]||'#888';
+    const col=MC[key]||'#5566aa';
     const av=AVC[key]||'av-vacant';
     const init=key==='asif'?'AA':'NN';
     const rat=s.total>0?Math.round(s.solved/s.total*100):0;
     h+=`<div class="fb-card">
       <div class="fb-card-name">
         <div class="avatar ${av}" style="width:30px;height:30px;font-size:11px">${init}</div>
-        <span style="color:${col};font-weight:500">${MN[key]||key}</span>
+        <span style="color:${col};font-weight:600;text-shadow:0 0 10px ${col}">${MN[key]||key}</span>
       </div>
       <div class="fb-stats">
         <div class="fb-stat fbt"><div class="fb-stat-val">${s.total}</div><div class="fb-stat-lbl">raised</div></div>
         <div class="fb-stat fbp"><div class="fb-stat-val">${s.pending}</div><div class="fb-stat-lbl">pending</div></div>
         <div class="fb-stat fbs"><div class="fb-stat-val">${s.solved}</div><div class="fb-stat-lbl">solved</div></div>
       </div>
-      <div style="font-size:10px;color:#888;margin-top:8px">Solve ratio: ${rat}%</div>
-      <div class="rbar-bg"><div class="rbar bg-good" style="width:${rat}%;background:#1D9E75"></div></div>
+      <div style="font-size:10px;color:#5566aa;margin-top:8px">Solve ratio: <span style="color:${rat>=80?'#39ff14':rat>=50?'#ffe000':'#ff2d78'};text-shadow:0 0 8px currentColor">${rat}%</span></div>
+      <div class="rbar-bg"><div class="rbar" style="width:${rat}%;background:#39ff14;box-shadow:0 0 8px #39ff14"></div></div>
     </div>`;
   });
-  document.getElementById('fbPerMember').innerHTML=h||'<p style="color:#aaa;font-size:12px">No feedback data yet.</p>';
+  document.getElementById('fbPerMember').innerHTML=h||'<p style="color:#2a2a44;font-size:12px">No feedback data yet.</p>';
 }
 
 /* ── Feedback table ── */
@@ -405,16 +441,16 @@ function renderFbTable(){
     if(q&&!r.subject.toLowerCase().includes(q))return false;
     return true;
   });
-  if(!rows.length){document.getElementById('fbTable').innerHTML='<p style="color:#888;text-align:center;padding:24px">No mails match.</p>';return;}
+  if(!rows.length){document.getElementById('fbTable').innerHTML='<p style="color:#2a2a44;text-align:center;padding:24px">No mails match.</p>';return;}
   let h=`<table><thead><tr><th>#</th><th>Date</th><th>KAM</th><th>Mail Subject</th><th>Status</th><th>Solved Date</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
-    const col=MC[r.key]||'#888';
+    const col=MC[r.key]||'#5566aa';
     const init=r.key==='asif'?'AA':r.key==='nahid'?'NN':'?';
     const sp=r.solved?`<span class="pill pill-solv">✅ Solved</span>`:r.pending?`<span class="pill pill-pend">⏳ Pending</span>`:`<span class="pill pill-o">—</span>`;
     h+=`<tr>
-      <td style="color:#bbb">${i+1}</td>
+      <td style="color:#2a2a44">${i+1}</td>
       <td>${r.date||'—'}</td>
-      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">${init}</span></td>
+      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;text-shadow:0 0 8px ${col};border:1px solid ${col}44">${init}</span></td>
       <td>${r.subject}</td>
       <td>${sp}</td>
       <td>${r.solve_date||'—'}</td>
@@ -443,21 +479,21 @@ function renderIssueTable(){
     if(q){const h=(r.cons+r.comment+r.cat+r.kam).toLowerCase();if(!h.includes(q))return false;}
     return true;
   });
-  if(!rows.length){document.getElementById('tblWrap').innerHTML='<p style="color:#888;text-align:center;padding:24px">No issues match.</p>';return;}
+  if(!rows.length){document.getElementById('tblWrap').innerHTML='<p style="color:#2a2a44;text-align:center;padding:24px">No issues match.</p>';return;}
   const IN={asif:'AA',nahid:'NN'};
   let h=`<table><thead><tr><th>#</th><th>Date</th><th>Who</th><th>Consignment</th><th>Category</th><th>Priority</th><th>Status</th><th>Comment</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
-    const col=MC[r.key]||'#888';
+    const col=MC[r.key]||'#5566aa';
     const sp=r.solved?`<span class="pill pill-s">${r.status||'Solved'}</span>`:`<span class="pill pill-o">${r.status||'—'}</span>`;
     const pp=r.pri.toLowerCase()==='urgent'?`<span class="pill pill-urg">${r.pri}</span>`:r.pri?`<span class="pill pill-o">${r.pri}</span>`:'—';
     const sc=r.comment.length>90?r.comment.substring(0,90)+'…':r.comment;
     h+=`<tr>
-      <td style="color:#bbb">${i+1}</td><td>${r.date||'—'}</td>
-      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600">${IN[r.key]||'?'}</span></td>
+      <td style="color:#2a2a44">${i+1}</td><td>${r.date||'—'}</td>
+      <td><span style="background:${col}22;color:${col};font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;text-shadow:0 0 8px ${col};border:1px solid ${col}44">${IN[r.key]||'?'}</span></td>
       <td>${r.cons||'—'}</td>
-      <td>${r.cat||'—'}<br><span style="color:#aaa;font-size:10px">${r.subcat||''}</span></td>
+      <td>${r.cat||'—'}<br><span style="color:#334466;font-size:10px">${r.subcat||''}</span></td>
       <td>${pp}</td><td>${sp}</td>
-      <td>${r.is_ir?'<span class="pill pill-ir">✉ IR</span><br>':''}<span style="color:#888">${sc||'—'}</span></td>
+      <td>${r.is_ir?'<span class="pill pill-ir">✉ IR</span><br>':''}<span style="color:#5566aa">${sc||'—'}</span></td>
     </tr>`;
   });
   h+=`</tbody></table><div class="tbl-count">${rows.length} issue${rows.length!==1?'s':''} shown</div>`;
