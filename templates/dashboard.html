@@ -239,6 +239,8 @@ tr:hover td{background:#f5f7ff}
 const MC={asif:'#0066ff',nahid:'#00b87a'};
 const MN={asif:'Ahmed Asif Rashid',nahid:'Nuruzzaman Nahid'};
 const AV={asif:'a',nahid:'n',vacant:'v'};
+const MDESIG={asif:'Assistant Manager',nahid:'Associate'};
+const MID={asif:'CL-86026',nahid:'CL-84175'};
 const CLR=['#0066ff','#00b87a','#ff0055','#8800ff','#ffaa00','#00ccdd','#ff5500','#cc44ff'];
 Chart.defaults.color='#7a80a0';Chart.defaults.borderColor='#dde1f0';
 Chart.defaults.font.family='Space Mono';Chart.defaults.font.size=10;
@@ -282,7 +284,7 @@ function rCards(members){
     h+=`<div class="kcard ${m.key}"><div class="kglow"></div>
       <div class="khdr">
         <div class="av ${AV[m.key]||'v'}">${m.initials}</div>
-        <div style="flex:1;min-width:0"><div class="kname">${m.name}</div><div class="krole">key account manager</div></div>
+        <div style="flex:1;min-width:0"><div class="kname">${m.name}</div><div class="krole">${MDESIG[m.key]||'key account manager'} &nbsp;·&nbsp; ${MID[m.key]||''}</div></div>
         <span class="rbadge ${rc}">${m.ratio}%</span>
       </div>
       <div class="mstats">
