@@ -7,19 +7,19 @@ app = Flask(__name__)
 
 DASHBOARD_TITLE = "Grid KAM Issues Escalation Dashboard"
 
-# ── Apps Script Web App URL ───────────────────────────────────────────────────
-# After deploying Code.gs, paste your Web App URL here:
-APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxYkYWTJZ6aYirSQMQxXb-noR3RfObqZh5UBNUllKubn8P1hOpEGwDg0XiCwkshasem/exec"
-
-# Fallback: direct CSV export (used if Apps Script URL not set)
-SHEET_ID = "14OpqyqI9QiF0dtuxaRMX3DnHdMEOoe9D-BTccYgGqwU"
-TABS_FALLBACK = {
-    "ISD 2026":     "1809995914",
-    "OSD 2026":     "263348705",
-    "Central 2026": "1317126184",
+# ── Separate sheet IDs (one per tab) ─────────────────────────────────────────
+SHEETS = {
+    "ISD 2026":     "14OpqyqI9QiF0dtuxaRMX3DnHdMEOoe9D-BTccYgGqwU",
+    "OSD 2026":     "1891YSDLq5cAK2kO6Z9OA-W_TcBLtj3-HY4EDRiqL2HI",
+    "Central 2026": "1v9ZiDiK5WdMNUeMy4qZtnR6YOWaUycexgEXBjSubYMA",
 }
 FEEDBACK_SHEET_ID  = "1qWXu2WRA_D6qRwAK7mbGVJ-xHH2MHwqDHZiP5sO3Ofo"
 FEEDBACK_SHEET_URL = f"https://docs.google.com/spreadsheets/d/{FEEDBACK_SHEET_ID}/export?format=csv&gid=0"
+
+# ── Legacy (not used) ─────────────────────────────────────────────────────────
+APPS_SCRIPT_URL = ""
+SHEET_ID = ""
+TABS_FALLBACK = {}
 
 # ── Team config ───────────────────────────────────────────────────────────────
 TEAM = [
@@ -81,32 +81,15 @@ def normalise_date(ts):
     return ts  # return as-is if nothing matched
 
 # ── Data fetching ─────────────────────────────────────────────────────────────
-def using_apps_script():
-    return "YOUR_DEPLOYMENT_ID" not in APPS_SCRIPT_URL and APPS_SCRIPT_URL.startswith("https://")
-
-def fetch_from_apps_script():
-    """Fetch all data from Apps Script Web App (single HTTP call)."""
-    try:
-        r = requests.get(APPS_SCRIPT_URL, timeout=45)
-        r.raise_for_status()
-        data = r.json()
-        if not data.get("ok"):
-            return None, None, data.get("error", "Apps Script returned error")
-
-        main_rows = data.get("main", {}).get("rows", [])
-        fb_rows   = data.get("feedback", {}).get("rows", [])
-        return main_rows, fb_rows, None
-    except Exception as e:
-        return None, None, str(e)
-
-def fetch_csv_fallback():
-    """Fallback: fetch raw CSV from Google Sheets public export."""
+def fetch_all_data():
+    """Fetch each sheet separately via direct CSV export."""
     import csv
     all_rows, errors = [], []
-    for tab_name, gid in TABS_FALLBACK.items():
-        url = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid={gid}"
+
+    for tab_name, sheet_id in SHEETS.items():
+        url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid=0"
         try:
-            r = requests.get(url, timeout=10)
+            r = requests.get(url, timeout=20)
             r.raise_for_status()
             reader = csv.DictReader(io.StringIO(r.text))
             for row in reader:
@@ -118,20 +101,14 @@ def fetch_csv_fallback():
     # Feedback
     fb_rows = []
     try:
-        r = requests.get(FEEDBACK_SHEET_URL, timeout=10)
+        r = requests.get(FEEDBACK_SHEET_URL, timeout=20)
         r.raise_for_status()
-        import csv as _csv
-        reader = _csv.DictReader(io.StringIO(r.text))
+        reader = csv.DictReader(io.StringIO(r.text))
         fb_rows = [dict(row) for row in reader]
     except Exception as e:
         errors.append(f"feedback: {e}")
 
     return all_rows, fb_rows, ("; ".join(errors) if errors else None)
-
-def fetch_all_data():
-    if using_apps_script():
-        return fetch_from_apps_script()
-    return fetch_csv_fallback()
 
 # ── Row processing ────────────────────────────────────────────────────────────
 def process_rows(raw_rows, kam_filter=None):
@@ -219,8 +196,7 @@ def debug():
     headers   = list(raw[0].keys())    if raw    else []
     fb_headers= list(fb_raw[0].keys()) if fb_raw else []
     return jsonify({
-        "source":       "apps_script" if using_apps_script() else "csv_fallback",
-        "apps_script_url": APPS_SCRIPT_URL,
+        "source": "separate_sheets",
         "error":        err,
         "total_rows":   len(raw),
         "fb_rows":      len(fb_raw),
@@ -309,7 +285,7 @@ def api_data():
 
     return jsonify({
         "ok": not err, "error": err,
-        "source": "apps_script" if using_apps_script() else "csv_fallback",
+        "source": "separate_sheets",
         "rows": rows, "members": members,
         "summary": {
             "total": len(rows), "solved": all_solved,
