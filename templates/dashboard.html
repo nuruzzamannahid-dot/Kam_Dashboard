@@ -392,7 +392,7 @@ function rFbT(){
     return true;
   });
   if(!rows.length){document.getElementById('fbtbl').innerHTML='<p style="color:var(--tdim);text-align:center;padding:24px;font-family:Space Mono,monospace">no mails match.</p>';return;}
-  let h=`<table><thead><tr><th>#</th><th>Date</th><th>KAM</th><th>Mail Subject</th><th>Status</th><th>Solved Date</th></tr></thead><tbody>`;
+  let h=`<table><thead><tr><th>#</th><th>Date</th><th>KAM</th><th>Mail Subject</th><th>Status</th><th>Solved Date</th><th>Resolution Gap</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
     const col=MC[r.key]||'#888';const ini=r.key==='asif'?'AA':r.key==='nahid'?'NN':'?';
     const sp=r.solved?`<span class="pill psv">✅ solved</span>`:r.pending?`<span class="pill ppd">⏳ pending</span>`:`<span class="pill po">—</span>`;
@@ -402,6 +402,16 @@ function rFbT(){
       <td><span style="background:${col}18;color:${col};font-size:10px;padding:2px 8px;border-radius:4px;font-family:'Space Mono',monospace;font-weight:700;border:1.5px solid ${col}55">${ini}</span></td>
       <td>${r.subject}</td><td>${sp}</td>
       <td style="font-family:'Space Mono',monospace;font-size:11px">${r.solve_date||'—'}</td>
+      <td style="font-family:'Space Mono',monospace;font-size:11px;text-align:center">${(()=>{
+        if(!r.solve_date||!r.date)return'<span style="color:#bbb">—</span>';
+        const d1=new Date(r.date.replace(/-/g,'/'));
+        const d2=new Date(r.solve_date.replace(/-/g,'/'));
+        const gap=Math.round((d2-d1)/(1000*60*60*24));
+        if(isNaN(gap)||gap<0)return'<span style="color:#bbb">—</span>';
+        if(gap===0)return'<span style="color:#00b87a;font-weight:700">Same day</span>';
+        const clr=gap<=2?'#00b87a':gap<=5?'#f5a623':'#e74c3c';
+        return\`<span style="color:\${clr};font-weight:700">\${gap}d</span>\`;
+      })()}</td>
     </tr>`;
   });
   h+=`</tbody></table><div class="tc">${rows.length} mail${rows.length!==1?'s':''} shown</div>`;
