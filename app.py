@@ -6,6 +6,8 @@ from flask import Flask, render_template, jsonify
 
 app = Flask(__name__)
 
+DASHBOARD_TITLE = "Grid KAM Issues Escalation Dashboard"
+
 SHEET_ID  = "1bsVE0CtTfTz7tojWxwBdb2PEa3x_kr1Q1ZST88WlB1E"
 SHEET_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/export?format=csv&gid=0"
 
@@ -119,7 +121,7 @@ def process_rows(rows):
 
 @app.route("/")
 def index():
-    return render_template("dashboard.html", team=TEAM)
+    return render_template("dashboard.html", team=TEAM, title=DASHBOARD_TITLE)
 
 @app.route("/api/debug/feedback")
 def debug_feedback():
