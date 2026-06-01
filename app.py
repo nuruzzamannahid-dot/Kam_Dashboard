@@ -87,7 +87,7 @@ def using_apps_script():
 def fetch_from_apps_script():
     """Fetch all data from Apps Script Web App (single HTTP call)."""
     try:
-        r = requests.get(APPS_SCRIPT_URL, timeout=15)
+        r = requests.get(APPS_SCRIPT_URL, timeout=45)
         r.raise_for_status()
         data = r.json()
         if not data.get("ok"):
