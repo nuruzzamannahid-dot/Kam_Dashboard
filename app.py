@@ -9,10 +9,10 @@ DASHBOARD_TITLE = "Grid KAM Issues Escalation Dashboard"
 
 # ── Apps Script Web App URL ───────────────────────────────────────────────────
 # After deploying Code.gs, paste your Web App URL here:
-APPS_SCRIPT_URL = ""
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxyIPvJMtF4P-Rpm_W1keGWEFQbbkkweKlNNDsTep4YpzLcAyj5xxSnudbBUst3Ebs9/exec"
 
 # Fallback: direct CSV export (used if Apps Script URL not set)
-SHEET_ID = "1bsVE0CtTfTz7tojWxwBdb2PEa3x_kr1Q1ZST88WlB1E"
+SHEET_ID = "14OpqyqI9QiF0dtuxaRMX3DnHdMEOoe9D-BTccYgGqwU"
 TABS_FALLBACK = {
     "ISD 2026":     "0",
     "OSD 2026":     "1669718373",
@@ -87,7 +87,7 @@ def using_apps_script():
 def fetch_from_apps_script():
     """Fetch all data from Apps Script Web App (single HTTP call)."""
     try:
-        r = requests.get(APPS_SCRIPT_URL, timeout=15)
+        r = requests.get(APPS_SCRIPT_URL, timeout=45)
         r.raise_for_status()
         data = r.json()
         if not data.get("ok"):
