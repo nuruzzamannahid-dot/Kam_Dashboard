@@ -9,7 +9,7 @@ DASHBOARD_TITLE = "Grid KAM Issues Escalation Dashboard"
 
 # ── Apps Script Web App URL ───────────────────────────────────────────────────
 # After deploying Code.gs, paste your Web App URL here:
-APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXp-lu8WWkktnxxk_9c4FitlCTZOZeX6b6PFFQcExAprEYumhGDewIzFQm0ofRcn9d/exec"
+APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxyIPvJMtF4P-Rpm_W1keGWEFQbbkkweKlNNDsTep4YpzLcAyj5xxSnudbBUst3Ebs9/exec"
 
 # Fallback: direct CSV export (used if Apps Script URL not set)
 SHEET_ID = "1bsVE0CtTfTz7tojWxwBdb2PEa3x_kr1Q1ZST88WlB1E"
