@@ -219,9 +219,11 @@ tr:hover td{background:#f5f7ff}
     <div class="shdr log"><span>📁</span><span class="shdr-txt">Issues Log</span></div>
     <div class="cc">
       <div class="filters">
-        <input type="text" id="sq" placeholder="Search consignment, comment, category…">
+        <input type="text" id="sq" placeholder="Search consignment, details, category…">
         <select id="df"><option value="">All dates</option></select>
         <select id="cf"><option value="">All categories</option></select>
+        <select id="kamf"><option value="all">All KAMs</option><option value="asif">Ahmed Asif Rashid</option><option value="nahid">Nuruzzaman Nahid</option></select>
+        <select id="tabf"><option value="all">All Tabs</option><option value="ISD">ISD</option><option value="OSD">OSD</option><option value="Central">Central</option></select>
       </div>
       <div class="tabs">
         <button class="tab on" data-t="all">All</button>
@@ -427,30 +429,42 @@ function rFilt(dates,cats){
 
 function rIss(){
   const q=document.getElementById('sq').value.toLowerCase();
-  const df=document.getElementById('df').value,cf=document.getElementById('cf').value;
+  const df=document.getElementById('df').value;
+  const cf=document.getElementById('cf').value;
+  const kamf=document.getElementById('kamf').value;
+  const tabf=document.getElementById('tabf').value;
   const rows=ALL.filter(r=>{
     if(TAB==='asif'&&r.key!=='asif')return false;
     if(TAB==='nahid'&&r.key!=='nahid')return false;
     if(TAB==='ir'&&!r.is_ir)return false;
+    if(kamf&&kamf!=='all'&&r.key!==kamf)return false;
+    if(tabf&&tabf!=='all'&&r.tab!==tabf)return false;
     if(df&&!r.date.startsWith(df))return false;
     if(cf&&r.cat!==cf)return false;
-    if(q){const h=(r.cons+r.comment+r.cat+r.kam).toLowerCase();if(!h.includes(q))return false;}
+    if(q){const h=((r.cons||'')+(r.details||'')+(r.cat||'')+(r.kam||'')+(r.hub||'')+(r.zone||'')).toLowerCase();if(!h.includes(q))return false;}
     return true;
   });
   if(!rows.length){document.getElementById('itbl').innerHTML='<p style="color:var(--tdim);text-align:center;padding:24px;font-family:Space Mono,monospace">no issues match.</p>';return;}
-  let h=`<table><thead><tr><th>#</th><th>Date</th><th>Who</th><th>Consignment</th><th>Category</th><th>Priority</th><th>Status</th><th>Comment</th></tr></thead><tbody>`;
+  let h=`<table><thead><tr><th>#</th><th>Date</th><th>Tab</th><th>KAM</th><th>Consignment</th><th>Zone / Hub</th><th>Category</th><th>Priority</th><th>Ops Status</th><th>Resolved Date</th><th>Age</th><th>Details</th></tr></thead><tbody>`;
   rows.forEach((r,i)=>{
     const col=MC[r.key]||'#888';
-    const sp=r.solved?`<span class="pill ps">${r.status||'solved'}</span>`:`<span class="pill po">${r.status||'—'}</span>`;
-    const pp=r.pri.toLowerCase()==='urgent'?`<span class="pill pu">${r.pri}</span>`:r.pri?`<span class="pill po">${r.pri}</span>`:'—';
-    const sc=r.comment.length>90?r.comment.substring(0,90)+'…':r.comment;
+    const ini=r.key==='asif'?'AA':r.key==='nahid'?'NN':'?';
+    const sp=r.solved?`<span class="pill ps">${r.status||'Solved'}</span>`:r.pending?`<span class="pill ppd">${r.status||'Pending'}</span>`:`<span class="pill po">${r.status||'—'}</span>`;
+    const pp=r.pri&&r.pri.toLowerCase()==='urgent'?`<span class="pill pu">${r.pri}</span>`:r.pri?`<span class="pill po">${r.pri}</span>`:'—';
+    const sc=(r.details||r.comment1||'').length>80?(r.details||r.comment1||'').substring(0,80)+'…':(r.details||r.comment1||'');
+    const tabCol=r.tab&&r.tab.includes('ISD')?'#0066ff':r.tab&&r.tab.includes('OSD')?'#f5a623':'#00b87a';
+    const ageCol=r.issue_age&&parseInt(r.issue_age)>7?'#e74c3c':r.issue_age&&parseInt(r.issue_age)>3?'#f5a623':'#00b87a';
     h+=`<tr>
       <td style="color:var(--tdim);font-family:'Space Mono',monospace">${i+1}</td>
       <td style="font-family:'Space Mono',monospace;font-size:11px">${r.date||'—'}</td>
-      <td><span style="background:${col}18;color:${col};font-size:10px;padding:2px 8px;border-radius:4px;font-family:'Space Mono',monospace;font-weight:700;border:1.5px solid ${col}55">${r.key==='asif'?'AA':'NN'}</span></td>
-      <td>${r.cons||'—'}</td>
+      <td><span style="background:${tabCol}18;color:${tabCol};font-size:10px;padding:2px 8px;border-radius:4px;font-family:'Space Mono',monospace;font-weight:700;border:1.5px solid ${tabCol}55">${r.tab||'—'}</span></td>
+      <td><span style="background:${col}18;color:${col};font-size:10px;padding:2px 8px;border-radius:4px;font-family:'Space Mono',monospace;font-weight:700;border:1.5px solid ${col}55">${ini}</span></td>
+      <td style="font-family:'Space Mono',monospace;font-size:11px">${r.cons||'—'}</td>
+      <td style="font-size:11px;color:var(--tdim)">${r.zone||''}${r.zone&&r.hub?' / ':''}${r.hub||''}</td>
       <td>${r.cat||'—'}<br><span style="color:var(--tdim);font-size:10px">${r.subcat||''}</span></td>
       <td>${pp}</td><td>${sp}</td>
+      <td style="font-family:'Space Mono',monospace;font-size:11px">${r.resolved_date||'—'}</td>
+      <td style="font-family:'Space Mono',monospace;font-size:11px;text-align:center">${r.issue_age?'<span style="color:'+ageCol+';font-weight:700">'+r.issue_age+'d</span>':'—'}</td>
       <td>${r.is_ir?'<span class="pill pir">✉ IR</span><br>':''}<span style="color:var(--tdim)">${sc||'—'}</span></td>
     </tr>`;
   });
@@ -465,7 +479,7 @@ document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',function
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
   this.classList.add('on');TAB=this.dataset.t;rIss();
 }));
-['sq','df','cf'].forEach(id=>{
+['sq','df','cf','kamf','tabf'].forEach(id=>{
   document.getElementById(id).addEventListener('input',rIss);
   document.getElementById(id).addEventListener('change',rIss);
 });
