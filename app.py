@@ -14,9 +14,9 @@ APPS_SCRIPT_URL = ""
 # Fallback: direct CSV export (used if Apps Script URL not set)
 SHEET_ID = "14OpqyqI9QiF0dtuxaRMX3DnHdMEOoe9D-BTccYgGqwU"
 TABS_FALLBACK = {
-    "ISD 2026":     "0",
-    "OSD 2026":     "1669718373",
-    "Central 2026": "226077825",
+    "ISD 2026":     "1809995914",
+    "OSD 2026":     "263348705",
+    "Central 2026": "1317126184",
 }
 FEEDBACK_SHEET_ID  = "1qWXu2WRA_D6qRwAK7mbGVJ-xHH2MHwqDHZiP5sO3Ofo"
 FEEDBACK_SHEET_URL = f"https://docs.google.com/spreadsheets/d/{FEEDBACK_SHEET_ID}/export?format=csv&gid=0"
