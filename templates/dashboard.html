@@ -410,7 +410,7 @@ function rFbT(){
         if(isNaN(gap)||gap<0)return'<span style="color:#bbb">—</span>';
         if(gap===0)return'<span style="color:#00b87a;font-weight:700">Same day</span>';
         const clr=gap<=2?'#00b87a':gap<=5?'#f5a623':'#e74c3c';
-        return\`<span style="color:\${clr};font-weight:700">\${gap}d</span>\`;
+        return '<span style="color:'+clr+';font-weight:700">'+gap+'d</span>';
       })()}</td>
     </tr>`;
   });
